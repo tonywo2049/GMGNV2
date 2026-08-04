@@ -21,8 +21,8 @@
     "category": "Productivity",
     "capabilities": ["Read", "Write"],
     "defaultPrompt": [
-      "Use GMGN V2 to determine the right agent for this request.",
-      "用 GMGN V2 推进当前项目。"
+      "我想开发一个新产品，请帮我开始。",
+      "继续推进当前项目。"
     ]
   }
 }

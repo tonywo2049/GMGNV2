@@ -1,6 +1,6 @@
 ---
 name: gmgn
-description: Use first for GMGN V2 project work. Select the target GMGN V2 agent from the user's current intent, prepare its brief, dispatch it, and then relay without taking over workflow decisions.
+description: Use first when the user wants to create, plan, develop, change, continue, complete, or release a project or product. Also use for product ideas, project decisions, milestones, requirements, designs, task breakdown, task execution, milestone closure, and releases. Determine the requested outcome, prepare the target agent's brief, dispatch that agent, and then relay without taking over workflow decisions.
 ---
 
 # GMGN V2 Router

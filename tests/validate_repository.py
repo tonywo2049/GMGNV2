@@ -62,6 +62,9 @@ def validate() -> None:
                 f"Agent runtime 不匹配: {role}")
         instructions = profile["developer_instructions"]
         require(len(instructions.strip()) >= 120, f"developer_instructions 过短: {role}")
+        require("任务书输入：" not in instructions, f"任务书输入不应复制到 Agent TOML: {role}")
+        for section in ("定位：", "职责范围：", "处理流程：", "不做：", "Checklist："):
+            require(section in instructions, f"developer_instructions 缺少 {section}: {role}")
         if role in SPAWNERS:
             require("$gmgn-v2:write-agent-brief" in instructions,
                     f"可创建子 Agent 的角色未使用任务书 Skill: {role}")
