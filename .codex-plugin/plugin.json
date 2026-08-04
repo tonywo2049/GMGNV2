@@ -1,0 +1,28 @@
+{
+  "name": "gmgn-v2",
+  "version": "0.1.0",
+  "description": "GMGN V2 — an agent-driven, traceable delivery workflow optimized for parallel coding.",
+  "author": {
+    "name": "Tony"
+  },
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "agents",
+    "requirements",
+    "parallel-coding",
+    "traceability"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "GMGN V2",
+    "shortDescription": "Agent-driven delivery with traceable documents and parallel Task execution",
+    "developerName": "Tony",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "defaultPrompt": [
+      "Use GMGN V2 to determine the right agent for this request.",
+      "用 GMGN V2 推进当前项目。"
+    ]
+  }
+}

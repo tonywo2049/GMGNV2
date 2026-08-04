@@ -1,0 +1,4 @@
+interface:
+  display_name: "GMGN V2 Agent Brief"
+  short_description: "Write the minimum complete input for a selected agent"
+  default_prompt: "Use $gmgn-v2:write-agent-brief for the selected GMGN V2 agent."

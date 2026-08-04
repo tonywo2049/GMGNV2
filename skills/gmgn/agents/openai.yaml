@@ -1,0 +1,4 @@
+interface:
+  display_name: "GMGN V2 Router"
+  short_description: "Select and dispatch the right GMGN V2 agent"
+  default_prompt: "Use $gmgn-v2:gmgn to route and advance this project."
