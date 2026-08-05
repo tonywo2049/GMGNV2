@@ -78,11 +78,11 @@ python3 skills/gmgn/scripts/manage_codex_install.py update
 把 accepted 候选发布为 v1.0.0。
 ```
 
-Main Session 对当前请求做一次路由，使用 `$gmgn-v2:write-agent-brief` 生成最小任务书，然后由选中的 Agent 负责语义执行。
+Main Session 对当前请求做一次路由，把用户完整原话不改写地交给选中的 Agent。Main Session 不使用 `$gmgn-v2:write-agent-brief`，不总结请求或附加下一步指导；派发后只原样转发消息。`write-agent-brief` 仅用于 Agent 创建子 Agent。
 
 ## 工作流程
 
-1. **Project Designer** 完成带外部调研的 Brainstorm，创建或修订 Project Definition 和 Roadmap。
+1. **Project Designer** 先澄清到能够形成有边界的调研问题，再询问参考、完成带外部调研的 Brainstorm，并创建或修订 Project Definition 和 Roadmap。
 2. Project Definition 和 Roadmap 通过独立 Critic 后，分别取得用户明确批准。
 3. **Architect** 把 accepted Roadmap Milestone 转成 Requirement、Design Bundle 和尽可能并行的 Task。
 4. R-D-T 候选通过独立 Critic 后自动接受，并通过一个 document-only PR 合入。
@@ -105,7 +105,7 @@ Main Session 对当前请求做一次路由，使用 `$gmgn-v2:write-agent-brief
 | Close Milestone | Milestone 核对、关闭记录、触发 repair Task | `write-agent-brief`；必要时由 Auditor 使用 `verify` |
 | Release | 已授权的打包、发布、部署和结果记录 | `write-agent-brief`；必要时由 Auditor 使用 `verify` |
 
-任何 Agent 创建另一个 Agent 前，都必须先使用 `write-agent-brief`。Auditor 不使用通用 mode；具体任务决定它读取哪个审查 Skill。
+每个命名 Agent 工作前都读取 [`gmgn` Shared Agent rules](skills/gmgn/SKILL.md#shared-agent-rules)，同时保持自身 TOML 规定的固定角色。仓库发现和 Agent 监测只在那里定义。任何 Agent 创建另一个 Agent 前都必须先使用 `write-agent-brief`，且不把共享规则复制进子 Agent 任务书；Main Session 不使用它。Auditor 不使用通用 mode；具体任务决定它读取哪个审查 Skill。
 
 ## 文档与接受规则
 

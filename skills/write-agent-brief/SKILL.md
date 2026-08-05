@@ -1,9 +1,11 @@
 ---
 name: write-agent-brief
-description: Use immediately before creating any GMGN V2 agent. Produce the smallest complete task brief for the already-selected target agent without routing work or copying its stable instructions.
+description: Use when a GMGN V2 Agent is about to create another Agent. Produce the smallest complete task brief for the already-selected target agent without routing work or copying its stable instructions. Main Session does not use this Skill.
 ---
 
 # Write Agent Brief
+
+This Skill is only for Agent-to-Agent delegation. Main Session forwards the user's instruction unchanged under `$gmgn-v2:gmgn` and never uses this Skill.
 
 The caller has already selected the target Agent. This Skill only prepares that Agent's input.
 
@@ -39,6 +41,7 @@ In particular, delete:
 - work owned by the caller or another Agent;
 - unrelated history, explanation, inventories, and speculative checks;
 - duplicated facts and evidence already available through an anchor;
+- shared runtime, repository-discovery, monitoring, waiting, or interruption rules owned by the caller;
 - extra objectives, assurance, or adjacent risks not required for the return.
 
 The brief is a trigger and current input, not a restriction on a document Agent's global impact analysis.
@@ -47,7 +50,7 @@ The brief is a trigger and current input, not a restriction on a document Agent'
 
 | Agent | Inputs needed when applicable |
 | --- | --- |
-| `gmgnv2_project_designer` | user objective; existing Project Definition, Log, and Roadmap anchors; known constraints; user reference projects or explicit none; requested definition or planning outcome; repository remote and target branch; target baseline; existing document branch, workspace, and PR if any; GitHub write and merge authorization |
+| `gmgnv2_project_designer` | user objective; existing Project Definition, Log, and Roadmap anchors; known constraints; user reference projects when already provided; requested definition or planning outcome; repository remote and target branch; target baseline; existing document branch, workspace, and PR if any; GitHub write and merge authorization |
 | `gmgnv2_architect` | target Milestone identifier and user-approved Roadmap anchor; applicable Project Definition anchor; current Requirement, Design Bundle/Contract, and Task anchors; repository context; requested R-D-T outcome; known constraints; repository remote and target branch; target baseline; existing document branch, workspace, and PR if any; GitHub write and merge authorization |
 | `gmgnv2_runner` | one Task ID and row anchor; upstream anchors; recorded Task state; repository remote and target branch; baseline commit; existing Task branch, workspace, and PR if any; GitHub write authorization |
 | `gmgnv2_auditor` | one concrete requested action and exactly one required audit Skill: `$gmgn-v2:critic`, `$gmgn-v2:code-review`, or `$gmgn-v2:verify`; fixed input candidate; authority, pass condition, declared write boundary and serial write handoff when Critic or Code Review may repair; environment when Verify observes; requested return |
