@@ -26,32 +26,33 @@ For current Codex plugin behavior, see the official [Plugins guide](https://lear
 
 ## Install
 
-### 1. Add the local marketplace and plugin
-
-From the repository root:
+From the repository root, run one command:
 
 ```bash
-codex plugin marketplace add "$PWD"
-codex plugin add gmgn-v2 --marketplace gmgn-v2
+python3 skills/gmgn/scripts/manage_codex_install.py install
 ```
 
-Alternatively, open this repository in the ChatGPT desktop app, restart the app so it discovers `.agents/plugins/marketplace.json`, open **Plugins**, choose **GMGN V2**, and install `gmgn-v2`.
+This command registers the local `gmgn-v2` marketplace when needed, installs the plugin, validates the installed Agent TOML files, copies them atomically into `${CODEX_HOME:-$HOME/.codex}/agents`, and verifies their version and hashes. It never changes GMGN V1 profiles.
 
-### 2. Install the named Agents
+The plugin also contains a `SessionStart` Hook as a fallback for installation or updates performed through the Plugins UI. Review and trust that Hook when Codex asks. If the Hook reports that Agent profiles changed, start one more new session before dispatching a GMGN V2 Agent.
 
-```bash
-python3 skills/gmgn/scripts/install_codex_agents.py
-```
-
-The script copies only `gmgnv2_*.toml` profiles into `${CODEX_HOME:-$HOME/.codex}/agents`. It does not overwrite GMGN V1 profiles.
-
-### 3. Start a new session
-
-Installed plugin Skills and Agent profiles become available in a new Codex session. Start the workflow explicitly:
+Start a new Codex session after installation. Installed plugin Skills and Agent profiles are then available:
 
 ```text
 Use $gmgn-v2:gmgn. I want to build a new product from this idea: ...
 ```
+
+## Update
+
+Run the single update command from the GMGN V2 repository:
+
+```bash
+python3 skills/gmgn/scripts/manage_codex_install.py update
+```
+
+For a local Git marketplace, the command requires a clean worktree and runs `git pull --ff-only`. For a configured Git marketplace, it runs the Codex marketplace upgrade. It then installs the current plugin version, synchronizes the Agent TOML files from the actual installed plugin copy, and verifies their hashes. No separate Agent-sync command is required.
+
+Start a new Codex session after an update that changes Agent TOML files.
 
 ## Quick use
 
@@ -183,28 +184,15 @@ The validation checks plugin structure, the Skill set, Agent runtimes and contra
 
 ## Uninstall
 
-### 1. Remove the plugin
+Run one command from the repository root:
 
 ```bash
-codex plugin remove gmgn-v2 --marketplace gmgn-v2
+python3 skills/gmgn/scripts/manage_codex_install.py uninstall
 ```
 
-In the desktop app, open the installed plugin and select **Uninstall plugin** instead.
+This removes the `gmgn-v2` plugin and only the named Agent files recorded as GMGN V2-managed, including profiles installed by v0.1.0 before the state manifest existed. It does not remove GMGN V1 profiles, project documents, branches, PRs, or repository history.
 
-### 2. Remove the separately installed named Agents
-
-```bash
-gmgn_agent_dir="${CODEX_HOME:-$HOME/.codex}/agents"
-for gmgn_agent in project_designer architect researcher runner auditor close_milestone release; do
-  rm -f "$gmgn_agent_dir/gmgnv2_${gmgn_agent}.toml"
-done
-```
-
-This removes only GMGN V2 Agent profiles. It does not remove GMGN V1 profiles, project documents, branches, PRs, or repository history.
-
-### 3. Optionally remove the local marketplace
-
-Do this only when no other plugin from this marketplace is needed:
+Optionally remove the local marketplace only when no other plugin from it is needed:
 
 ```bash
 codex plugin marketplace remove gmgn-v2
@@ -222,7 +210,8 @@ codex plugin list --json
 .codex-plugin/plugin.json       Plugin manifest
 .agents/plugins/marketplace.json Local marketplace entry
 .codex/agents/                  Named Agent profiles
-skills/                         Router, writing, research, and audit Skills
+hooks/                          SessionStart Agent-sync fallback
+skills/                         Router, writing, research, audit, and install tooling
 GMGNV2.md                       Normative workflow architecture
 README.md                       English usage guide
 README.zh-CN.md                 Chinese usage guide
