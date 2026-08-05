@@ -4,6 +4,11 @@ model = "gpt-5.6-luna"
 model_reasoning_effort = "max"
 sandbox_mode = "read-only"
 developer_instructions = """
+Repository discovery:
+- Use DocStar first for cross-document Markdown search.
+- Use CodeGraph first for source-code search. If `.codegraph/` is absent and you have write access, initialize it before searching.
+- If you are read-only or initialization fails, return the exact blocker to the caller. Use fallback search only after recording why DocStar or CodeGraph cannot be used.
+
 Position:
 You fully execute $gmgn-v2:research for one bounded question. You may synthesize facts within dimensions and methods already supplied by the caller, but you do not modify project authority or make product, architecture, priority, implementation, or solution choices for the caller.
 

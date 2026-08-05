@@ -26,32 +26,33 @@ GMGN V2 是面向 Codex 的 Agent 驱动研发工作流。它把项目想法逐�
 
 ## 安装
 
-### 1. 添加本地 marketplace 并安装插件
-
-在仓库根目录执行：
+在仓库根目录执行一条命令：
 
 ```bash
-codex plugin marketplace add "$PWD"
-codex plugin add gmgn-v2 --marketplace gmgn-v2
+python3 skills/gmgn/scripts/manage_codex_install.py install
 ```
 
-也可以在 ChatGPT 桌面端打开本仓库，重启应用使其发现 `.agents/plugins/marketplace.json`，打开 **Plugins**，选择 **GMGN V2** 并安装 `gmgn-v2`。
+该命令会在需要时注册本地 `gmgn-v2` marketplace、安装插件、校验实际安装版本中的 Agent TOML、原子复制到 `${CODEX_HOME:-$HOME/.codex}/agents`，并核对版本和文件哈希。它不会修改 GMGN V1 配置。
 
-### 2. 安装命名 Agent
+插件还带有一个 `SessionStart` Hook，作为通过 Plugins 界面安装或更新时的兜底。Codex 提示时需要检查并信任该 Hook。如果 Hook 报告 Agent 配置发生变化，再启动一个新 Session 后才能派发 GMGN V2 Agent。
 
-```bash
-python3 skills/gmgn/scripts/install_codex_agents.py
-```
-
-该脚本只把 `gmgnv2_*.toml` 配置复制到 `${CODEX_HOME:-$HOME/.codex}/agents`，不会覆盖 GMGN V1 配置。
-
-### 3. 启动新 Session
-
-安装后的插件 Skill 和 Agent 配置在新的 Codex Session 中生效。显式启动 GMGN V2：
+安装完成后启动新的 Codex Session，插件 Skill 和 Agent 配置即可使用：
 
 ```text
 使用 $gmgn-v2:gmgn。我想基于这个想法开发一个新产品：……
 ```
+
+## 更新
+
+在 GMGN V2 仓库中执行一条更新命令：
+
+```bash
+python3 skills/gmgn/scripts/manage_codex_install.py update
+```
+
+对于本地 Git marketplace，该命令要求工作区干净，并执行 `git pull --ff-only`；对于已配置的 Git marketplace，它执行 Codex marketplace upgrade。随后安装当前插件版本，从实际安装的插件副本同步 Agent TOML，并核对文件哈希。不需要再执行单独的 Agent 同步命令。
+
+如果更新修改了 Agent TOML，完成后启动新的 Codex Session。
 
 ## 快速使用
 
@@ -183,28 +184,15 @@ python3 -m unittest discover -s tests -v
 
 ## 卸载
 
-### 1. 卸载插件
+在仓库根目录执行一条命令：
 
 ```bash
-codex plugin remove gmgn-v2 --marketplace gmgn-v2
+python3 skills/gmgn/scripts/manage_codex_install.py uninstall
 ```
 
-在桌面端中，也可以打开已经安装的插件并选择 **Uninstall plugin**。
+该命令会卸载 `gmgn-v2` 插件，并只删除被记录为 GMGN V2 管理的命名 Agent 文件，同时兼容删除 v0.1.0 在状态清单出现前安装的配置。它不会删除 GMGN V1 配置、项目文档、branch、PR 或仓库历史。
 
-### 2. 删除单独安装的命名 Agent
-
-```bash
-gmgn_agent_dir="${CODEX_HOME:-$HOME/.codex}/agents"
-for gmgn_agent in project_designer architect researcher runner auditor close_milestone release; do
-  rm -f "$gmgn_agent_dir/gmgnv2_${gmgn_agent}.toml"
-done
-```
-
-该命令只删除 GMGN V2 Agent 配置，不删除 GMGN V1 配置、项目文档、branch、PR 或仓库历史。
-
-### 3. 按需删除本地 marketplace
-
-只有不再使用该 marketplace 中的任何插件时才执行：
+只有不再使用该 marketplace 中的任何插件时，才按需删除本地 marketplace：
 
 ```bash
 codex plugin marketplace remove gmgn-v2
@@ -222,7 +210,8 @@ codex plugin list --json
 .codex-plugin/plugin.json        插件清单
 .agents/plugins/marketplace.json 本地 marketplace 定义
 .codex/agents/                   命名 Agent 配置
-skills/                          Router、写作、调研和审查 Skill
+hooks/                           SessionStart Agent 同步兜底
+skills/                          Router、写作、调研、审查及安装工具
 GMGNV2.md                        规范工作流架构
 README.md                        英文使用说明
 README.zh-CN.md                  中文使用说明

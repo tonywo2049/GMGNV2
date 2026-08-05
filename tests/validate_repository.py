@@ -32,13 +32,41 @@ def require(condition: bool, message: str) -> None:
 def validate() -> None:
     plugin = json.loads((ROOT / ".codex-plugin/plugin.json").read_text())
     require(plugin["name"] == "gmgn-v2", "插件名必须为 gmgn-v2")
-    require(plugin["version"] == "0.1.0", "初始版本必须为 0.1.0")
+    require(plugin["version"] == "0.1.1", "发布版本必须为 0.1.1")
 
     marketplace = json.loads((ROOT / ".agents/plugins/marketplace.json").read_text())
     require(re.fullmatch(r"[A-Za-z0-9_-]+", marketplace["name"]) is not None,
             "Marketplace name must be CLI-safe")
     entry = next(item for item in marketplace["plugins"] if item["name"] == plugin["name"])
     require(entry["version"] == plugin["version"], "Marketplace version must match plugin version")
+
+    hook_config = json.loads((ROOT / "hooks/hooks.json").read_text())
+    session_hooks = hook_config["hooks"]["SessionStart"]
+    require(len(session_hooks) == 1, "GMGN V2 must define one SessionStart sync hook")
+    hook_command = session_hooks[0]["hooks"][0]["command"]
+    require("${PLUGIN_ROOT}/skills/gmgn/scripts/install_codex_agents.py" in hook_command,
+            "SessionStart hook must run the installed Agent synchronizer")
+    require("--hook" in hook_command, "SessionStart Agent sync must use hook output mode")
+
+    installer = (ROOT / "skills/gmgn/scripts/install_codex_agents.py").read_text()
+    for marker in (
+        ".gmgn-v2-managed.json", "os.replace", "def sync(", "def check(", "def uninstall(",
+        "Refusing to overwrite symlink", "plugin_version",
+    ):
+        require(marker in installer, f"Agent installer is missing lifecycle behavior: {marker}")
+
+    manager = (ROOT / "skills/gmgn/scripts/manage_codex_install.py").read_text()
+    for marker in (
+        'choices=("install", "update", "uninstall")', "git", "pull", "--ff-only",
+        "plugin", "marketplace", "upgrade", "installedPath", '"sync"', '"check"',
+    ):
+        require(marker in manager, f"Codex install manager is missing lifecycle behavior: {marker}")
+
+    for readme_name in ("README.md", "README.zh-CN.md"):
+        readme = (ROOT / readme_name).read_text()
+        for action in ("install", "update", "uninstall"):
+            command = f"python3 skills/gmgn/scripts/manage_codex_install.py {action}"
+            require(command in readme, f"{readme_name} is missing the unified {action} command")
 
     skill_files = sorted((ROOT / "skills").glob("*/SKILL.md"))
     expected_skills = {
@@ -72,6 +100,13 @@ def validate() -> None:
         require("Brief inputs:" not in instructions, f"任务书输入不应复制到 Agent TOML: {role}")
         for section in ("Position:", "Responsibilities:", "Workflow:", "Do not:", "Checklist:"):
             require(section in instructions, f"developer_instructions 缺少 {section}: {role}")
+        for discovery_rule in (
+            "Repository discovery:",
+            "Use DocStar first for cross-document Markdown search",
+            "Use CodeGraph first for source-code search",
+            "Use fallback search only after recording why DocStar or CodeGraph cannot be used",
+        ):
+            require(discovery_rule in instructions, f"Agent 缺少 repository discovery 规则: {role}: {discovery_rule}")
         if role in SPAWNERS:
             require("$gmgn-v2:write-agent-brief" in instructions,
                     f"可创建子 Agent 的角色未使用任务书 Skill: {role}")
