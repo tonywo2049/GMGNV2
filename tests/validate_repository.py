@@ -34,6 +34,12 @@ def validate() -> None:
     require(plugin["name"] == "gmgn-v2", "插件名必须为 gmgn-v2")
     require(plugin["version"] == "0.1.0", "初始版本必须为 0.1.0")
 
+    marketplace = json.loads((ROOT / ".agents/plugins/marketplace.json").read_text())
+    require(re.fullmatch(r"[A-Za-z0-9_-]+", marketplace["name"]) is not None,
+            "Marketplace name must be CLI-safe")
+    entry = next(item for item in marketplace["plugins"] if item["name"] == plugin["name"])
+    require(entry["version"] == plugin["version"], "Marketplace version must match plugin version")
+
     skill_files = sorted((ROOT / "skills").glob("*/SKILL.md"))
     expected_skills = {
         "brainstorm", "code-review", "critic", "gmgn", "research", "verify",
