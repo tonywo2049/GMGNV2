@@ -32,7 +32,7 @@ From the repository root:
 
 ```bash
 codex plugin marketplace add "$PWD"
-codex plugin add gmgn-v2 --marketplace "GMGN V2"
+codex plugin add gmgn-v2 --marketplace gmgn-v2
 ```
 
 Alternatively, open this repository in the ChatGPT desktop app, restart the app so it discovers `.agents/plugins/marketplace.json`, open **Plugins**, choose **GMGN V2**, and install `gmgn-v2`.
@@ -186,7 +186,7 @@ The validation checks plugin structure, the Skill set, Agent runtimes and contra
 ### 1. Remove the plugin
 
 ```bash
-codex plugin remove gmgn-v2 --marketplace "GMGN V2"
+codex plugin remove gmgn-v2 --marketplace gmgn-v2
 ```
 
 In the desktop app, open the installed plugin and select **Uninstall plugin** instead.
@@ -207,7 +207,7 @@ This removes only GMGN V2 Agent profiles. It does not remove GMGN V1 profiles, p
 Do this only when no other plugin from this marketplace is needed:
 
 ```bash
-codex plugin marketplace remove "GMGN V2"
+codex plugin marketplace remove gmgn-v2
 ```
 
 Restart the desktop app or start a new CLI session after uninstalling. Verify the result with:

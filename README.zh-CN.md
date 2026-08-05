@@ -32,7 +32,7 @@ GMGN V2 是面向 Codex 的 Agent 驱动研发工作流。它把项目想法逐�
 
 ```bash
 codex plugin marketplace add "$PWD"
-codex plugin add gmgn-v2 --marketplace "GMGN V2"
+codex plugin add gmgn-v2 --marketplace gmgn-v2
 ```
 
 也可以在 ChatGPT 桌面端打开本仓库，重启应用使其发现 `.agents/plugins/marketplace.json`，打开 **Plugins**，选择 **GMGN V2** 并安装 `gmgn-v2`。
@@ -186,7 +186,7 @@ python3 -m unittest discover -s tests -v
 ### 1. 卸载插件
 
 ```bash
-codex plugin remove gmgn-v2 --marketplace "GMGN V2"
+codex plugin remove gmgn-v2 --marketplace gmgn-v2
 ```
 
 在桌面端中，也可以打开已经安装的插件并选择 **Uninstall plugin**。
@@ -207,7 +207,7 @@ done
 只有不再使用该 marketplace 中的任何插件时才执行：
 
 ```bash
-codex plugin marketplace remove "GMGN V2"
+codex plugin marketplace remove gmgn-v2
 ```
 
 卸载后重启桌面端或启动新的 CLI Session。使用以下命令检查结果：
