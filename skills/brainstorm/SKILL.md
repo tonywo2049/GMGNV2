@@ -1,17 +1,28 @@
 ---
 name: brainstorm
-description: Explore and stress-test a project or product idea before creating or semantically revising ProjectDefinition.md. Use to clarify the problem, users, vision, positioning, goals, functional scope, priorities, references, constraints, and non-goals. Ask for the user's references first, then use parallel gmgnv2_researcher agents to investigate user references, comparable projects, and technical prior art before substantive decision questions and throughout the conversation when new fact gaps appear.
+description: Explore and stress-test a project or product idea before creating or semantically revising ProjectDefinition.md. First clarify the problem, users, context, and desired outcome enough to define bounded research, then ask for the user's references and use parallel gmgnv2_researcher agents to investigate user references, comparable projects, and technical prior art before evidence-dependent decisions.
 ---
 
 # Project Brainstorm
 
 Act as a direct, constructive product thinking partner. Help the user reach stronger conclusions instead of merely recording the first idea. Produce working conclusions for `$gmgn-v2:write-project-definition`; do not create a separate Brainstorm document.
 
-## Start with evidence
+## Clarify before research
 
-Derive what is already supported by the user's initial idea, repository, and current Project Definition. First ask which projects, products, repositories, papers, or technologies the user considers relevant and why. Treat an explicit `none` as a valid answer and retain it as `none-provided`.
+Start from what the user's initial idea, repository, and current Project Definition already establish. Guide the user to separate the problem, intended outcome, current idea, and assumptions. Before asking for references or starting external research, ask one high-impact question at a time until the known facts are sufficient to state:
 
-After that answer, immediately delegate the mandatory initial research through `gmgnv2_researcher` using `$gmgn-v2:write-agent-brief`:
+- the provisional problem or opportunity;
+- the intended users and use context;
+- the desired observable outcome;
+- a bounded description of the same or adjacent projects and technical approaches to search.
+
+These are research-readiness conditions, not a fixed questionnaire. Do not ask for information the user has already supplied, and do not prolong clarification when the current input already meets the conditions. After each answer, update the provisional understanding and ask only for the next missing fact that can materially change the research direction.
+
+## Start bounded research
+
+Once the minimum research context exists, state the current provisional understanding and research direction, then ask which projects, products, repositories, papers, or technologies the user considers relevant and why. Treat an explicit `none` as a valid answer and retain it as `none-provided`. If the user already supplied references or explicitly stated none, do not ask again.
+
+After that answer, or when references or `none-provided` were already supplied, immediately delegate the mandatory initial research through `gmgnv2_researcher` using `$gmgn-v2:write-agent-brief`:
 
 1. verify each applicable user-provided reference;
 2. independently discover projects that solve the same or an adjacent problem, even when the user supplied references;
@@ -19,7 +30,7 @@ After that answer, immediately delegate the mandatory initial research through `
 
 Use separate Researchers for independent questions and run them in parallel when possible. Give each Researcher one bounded question, the Project Designer decision it informs, claims to verify, source and recency requirements, inclusion and exclusion criteria, caller-owned comparison dimensions when needed, whether factual synthesis is requested, and a stopping condition. Let the question determine the candidate count.
 
-Wait for the initial required research before asking a substantive question whose value depends on external precedent. Require source anchors, versions or dates, evidence type, applicability, contradictions, and missing support. Researchers may normalize or compare facts only on dimensions supplied in their brief; they never recommend or choose. Synthesize the evidence and make product judgments here.
+Wait for the initial required research before asking a product trade-off or solution-selection question whose value depends on external precedent. Continue clarification only when it does not require that evidence. Require source anchors, versions or dates, evidence type, applicability, contradictions, and missing support. Researchers may normalize or compare facts only on dimensions supplied in their brief; they never recommend or choose. Synthesize the evidence and make product judgments here.
 
 ## Ask reference-backed questions
 

@@ -32,7 +32,7 @@ def require(condition: bool, message: str) -> None:
 def validate() -> None:
     plugin = json.loads((ROOT / ".codex-plugin/plugin.json").read_text())
     require(plugin["name"] == "gmgn-v2", "插件名必须为 gmgn-v2")
-    require(plugin["version"] == "0.1.1", "发布版本必须为 0.1.1")
+    require(plugin["version"] == "0.1.2", "发布版本必须为 0.1.2")
 
     marketplace = json.loads((ROOT / ".agents/plugins/marketplace.json").read_text())
     require(re.fullmatch(r"[A-Za-z0-9_-]+", marketplace["name"]) is not None,
@@ -100,29 +100,65 @@ def validate() -> None:
         require("Brief inputs:" not in instructions, f"任务书输入不应复制到 Agent TOML: {role}")
         for section in ("Position:", "Responsibilities:", "Workflow:", "Do not:", "Checklist:"):
             require(section in instructions, f"developer_instructions 缺少 {section}: {role}")
-        for discovery_rule in (
-            "Repository discovery:",
+        for shared_contract_rule in (
+            "Shared contract:",
+            "Before any work, read $gmgn-v2:gmgn completely",
+            "Apply its Shared Agent rules",
+            "Do not apply sections marked Main Session only",
+            "this TOML remains the authority for this Agent's fixed role",
+        ):
+            require(shared_contract_rule in instructions,
+                    f"Agent 缺少共享规则入口: {role}: {shared_contract_rule}")
+        require("Repository discovery:" not in instructions,
+                f"Agent TOML 不应复制共享 repository discovery 规则: {role}")
+        for shared_rule_body in (
             "Use DocStar first for cross-document Markdown search",
             "Use CodeGraph first for source-code search",
-            "Use fallback search only after recording why DocStar or CodeGraph cannot be used",
+            'wait_agent({"timeout_ms":600000})', "list_agents", "interrupt_agent",
         ):
-            require(discovery_rule in instructions, f"Agent 缺少 repository discovery 规则: {role}: {discovery_rule}")
+            require(shared_rule_body not in instructions,
+                    f"Agent TOML 不应复制共享规则正文: {role}: {shared_rule_body}")
         if role in SPAWNERS:
             require("$gmgn-v2:write-agent-brief" in instructions,
                     f"可创建子 Agent 的角色未使用任务书 Skill: {role}")
 
     router = (ROOT / "skills/gmgn/SKILL.md").read_text()
     for marker in (
+        "Named Agents apply `Shared Agent rules`", "Repository discovery",
+        "Use DocStar first for cross-document Markdown search",
+        "Use CodeGraph first for source-code search",
+        "Use fallback search only after recording why DocStar or CodeGraph cannot be used",
+        'wait_agent({"timeout_ms":600000})', "do not call `list_agents`",
+        "complete 10-minute wait expires with no event", "call `list_agents` once",
+        "Do not repeatedly poll, send heartbeat messages, or inspect logs to probe progress",
+        "Do not end the current Task while a required Agent is still running",
+        "Owner explicitly cancels", "Agent hard-fails", "execution scope is no longer valid",
+        "continuing would be unsafe",
+        "## Main Session only: responsibilities",
+        "## Main Session only: semantic routing",
+        "## Main Session only: mechanical Task dispatch",
         "semantic", "gmgnv2_project_designer", "gmgnv2_architect",
         "gmgnv2_runner", "gmgnv2_researcher", "gmgnv2_auditor",
-        "$gmgn-v2:write-agent-brief", "does not integrate", "mode or audit_type",
+        "user's complete instruction unchanged", "Do not use `$gmgn-v2:write-agent-brief`",
+        "without paraphrasing, summarizing, interpreting, combining, or adding instructions",
+        "does not integrate", "mode or audit_type",
         "After a Runner reports `Task completed`", "gmgnv2_close_milestone",
         "newly accepted repair Task", "Never start Release automatically",
     ):
         require(marker in router, f"Router 缺少契约: {marker}")
+    require("Before every dispatch, use `$gmgn-v2:write-agent-brief`" not in router,
+            "Main Session 仍在生成 Agent 任务书")
 
     brief = (ROOT / "skills/write-agent-brief/SKILL.md").read_text()
+    require("only for Agent-to-Agent delegation" in brief,
+            "任务书 Skill 未限定为 Agent 到子 Agent")
+    require("Main Session" in brief and "never uses this Skill" in brief,
+            "任务书 Skill 未排除 Main Session")
     require("Deletion test" in brief, "任务书 Skill 缺少删除测试")
+    require("shared runtime, repository-discovery, monitoring, waiting, or interruption rules" in brief,
+            "任务书 Skill 未排除调用者负责的共享运行规则")
+    require("user reference projects or explicit none" not in brief,
+            "Project Designer 任务书仍强制要求首轮参考项目输入")
     for role in AGENTS:
         require(f"gmgnv2_{role}" in brief, f"任务书 Skill 缺少输入契约: {role}")
     for marker in ("$gmgn-v2:critic", "$gmgn-v2:code-review", "$gmgn-v2:verify",
@@ -145,7 +181,10 @@ def validate() -> None:
     project_designer = agent_instructions["project_designer"]
     for marker in (
         "$gmgn-v2:brainstorm", "$gmgn-v2:write-project-definition",
-        "$gmgn-v2:write-roadmap", "After receiving user references or `none-provided`, immediately",
+        "$gmgn-v2:write-roadmap", "research-readiness conditions, not a fixed questionnaire",
+        "provisional problem or opportunity, intended users and use context",
+        "bounded description of comparable projects and technical approaches to search",
+        "After user references or `none-provided` are available",
         "When helpful, include concrete practices from reference projects",
         "gmgnv2_researcher", "gmgnv2_auditor", "$gmgn-v2:critic",
         "project-level user E2E", "Every Milestone must have explicit, decidable acceptance criteria",
@@ -198,10 +237,15 @@ def validate() -> None:
 
     brainstorm = (ROOT / "skills/brainstorm/SKILL.md").read_text()
     for marker in (
-        "First ask which projects", "immediately delegate the mandatory initial research",
+        "Before asking for references or starting external research",
+        "research-readiness conditions, not a fixed questionnaire",
+        "the provisional problem or opportunity", "the intended users and use context",
+        "the desired observable outcome", "a bounded description of the same or adjacent projects",
+        "state the current provisional understanding and research direction",
+        "do not ask again", "immediately delegate the mandatory initial research",
         "verify each applicable user-provided reference",
         "independently discover projects", "technical approaches",
-        "Wait for the initial required research before asking a substantive question",
+        "Wait for the initial required research before asking a product trade-off or solution-selection question",
         "state the relevant project's concrete practice",
         "gmgnv2_researcher", "Let the question determine the candidate count",
         "Researchers may normalize or compare facts only on dimensions supplied",

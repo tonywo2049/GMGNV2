@@ -78,11 +78,11 @@ Close Milestone M1.
 Release the accepted candidate as v1.0.0.
 ```
 
-Main Session routes the current request once, creates the minimum Agent brief with `$gmgn-v2:write-agent-brief`, and leaves semantic execution to the selected Agent.
+Main Session routes the current request once and dispatches the selected Agent with the user's complete instruction unchanged. It does not use `$gmgn-v2:write-agent-brief`, summarize the request, or add next-step guidance; after dispatch it only forwards messages unchanged. `write-agent-brief` is reserved for Agent-to-Agent delegation.
 
 ## Workflow
 
-1. **Project Designer** runs researched Brainstorming, then creates or revises the Project Definition and Roadmap.
+1. **Project Designer** first clarifies enough user context to form bounded research questions, then asks for references, runs researched Brainstorming, and creates or revises the Project Definition and Roadmap.
 2. The user explicitly approves both Project Definition and Roadmap after independent Critic review.
 3. **Architect** converts an accepted Roadmap Milestone into Requirement, Design Bundle, and maximally parallel Tasks.
 4. R-D-T candidates are accepted automatically after independent Critic review and merged through one document-only PR.
@@ -105,7 +105,7 @@ Main Session routes the current request once, creates the minimum Agent brief wi
 | Close Milestone | Milestone reconciliation, closure record, repair-Task trigger | `write-agent-brief`; `verify` through Auditor when required |
 | Release | Authorized packaging, publishing, deployment, and release record | `write-agent-brief`; `verify` through Auditor when required |
 
-Every Agent that creates another Agent first uses `write-agent-brief`. Auditor does not use a generic mode; the requested work determines which one audit Skill it reads.
+Every named Agent reads the [`gmgn` Shared Agent rules](skills/gmgn/SKILL.md#shared-agent-rules) before work while retaining its fixed TOML role. Repository discovery and Agent monitoring are defined only there. Every Agent that creates another Agent first uses `write-agent-brief`, which does not copy shared rules into the child brief; Main Session never uses it. Auditor does not use a generic mode; the requested work determines which one audit Skill it reads.
 
 ## Documents and acceptance
 
