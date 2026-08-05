@@ -105,7 +105,7 @@ Main Session routes the current request once and dispatches the selected Agent w
 | Close Milestone | Milestone reconciliation, closure record, repair-Task trigger | `write-agent-brief`; `verify` through Auditor when required |
 | Release | Authorized packaging, publishing, deployment, and release record | `write-agent-brief`; `verify` through Auditor when required |
 
-Every named Agent reads the [`gmgn` Shared Agent rules](skills/gmgn/SKILL.md#shared-agent-rules) before work while retaining its fixed TOML role. Repository discovery and Agent monitoring are defined only there. Every Agent that creates another Agent first uses `write-agent-brief`, which does not copy shared rules into the child brief; Main Session never uses it. Auditor does not use a generic mode; the requested work determines which one audit Skill it reads.
+Every named Agent reads the [`gmgn` Shared Agent rules](skills/gmgn/SKILL.md#shared-agent-rules) before work while retaining its fixed TOML role. Repository discovery, outcome ownership, and Agent monitoring are defined only there. An Agent creates, monitors, and handles the child Agents required by its own work; relaying a question, status, or blocker does not transfer that responsibility to Main Session. An exact blocker may end the current attempt, and the same owning Agent resumes when it clears. Main Session does not take over that work, without limiting its explicitly defined mechanical dispatch. Every Agent that creates another Agent first uses `write-agent-brief`, which does not copy shared rules into the child brief; Main Session never uses it. Auditor does not use a generic mode; the requested work determines which one audit Skill it reads.
 
 ## Documents and acceptance
 

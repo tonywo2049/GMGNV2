@@ -105,7 +105,7 @@ Main Session 对当前请求做一次路由，把用户完整原话不改写地�
 | Close Milestone | Milestone 核对、关闭记录、触发 repair Task | `write-agent-brief`；必要时由 Auditor 使用 `verify` |
 | Release | 已授权的打包、发布、部署和结果记录 | `write-agent-brief`；必要时由 Auditor 使用 `verify` |
 
-每个命名 Agent 工作前都读取 [`gmgn` Shared Agent rules](skills/gmgn/SKILL.md#shared-agent-rules)，同时保持自身 TOML 规定的固定角色。仓库发现和 Agent 监测只在那里定义。任何 Agent 创建另一个 Agent 前都必须先使用 `write-agent-brief`，且不把共享规则复制进子 Agent 任务书；Main Session 不使用它。Auditor 不使用通用 mode；具体任务决定它读取哪个审查 Skill。
+每个命名 Agent 工作前都读取 [`gmgn` Shared Agent rules](skills/gmgn/SKILL.md#shared-agent-rules)，同时保持自身 TOML 规定的固定角色。仓库发现、职责所有权和 Agent 监测只在那里定义。Agent 直接创建、监测和处理自身工作所需的子 Agent；经调用者传递问题、状态或 blocker 不转移职责。精确 blocker 可以结束当前执行，解除后由原 Agent 继续。Main Session 不代替 Agent 完成这些工作，但仍执行自身已明确规定的机械派发。任何 Agent 创建另一个 Agent 前都必须先使用 `write-agent-brief`，且不把共享规则复制进子 Agent 任务书；Main Session 不使用它。Auditor 不使用通用 mode；具体任务决定它读取哪个审查 Skill。
 
 ## 文档与接受规则
 

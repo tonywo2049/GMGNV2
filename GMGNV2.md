@@ -21,9 +21,9 @@ GMGN V2 不判断项目处于哪个阶段，只判断当前要做什么、所需
 
 ## 运行结构
 
-每个命名 Agent 的 TOML 都在工作前强制读取 [`gmgn` Skill 的 Shared Agent rules](skills/gmgn/SKILL.md#shared-agent-rules)，但不应用其中标记为 Main Session only 的章节。仓库发现优先级和父子 Agent 活动监测只在该处定义，不复制进 Agent TOML 或子 Agent 任务书。
+每个命名 Agent 的 TOML 都在工作前强制读取 [`gmgn` Skill 的 Shared Agent rules](skills/gmgn/SKILL.md#shared-agent-rules)，但不应用其中标记为 Main Session only 的章节。仓库发现、职责所有权和父子 Agent 活动监测只在该处定义，不复制进 Agent TOML 或子 Agent 任务书。Agent 直接创建、监测和处理自身工作所需的子 Agent；经调用者传递问题、状态或 blocker 不转移职责。结果完成或出现取消、必要输入或授权缺失、范围失效、硬失败或不安全等精确 blocker 时，可以结束当前执行；blocker 解除后由原 Agent 继续。
 
-Main Session 接收用户指令时只按固定职责选择目标 Agent，并把用户完整原话不改写地交给它；Main Session 不使用 `gmgn-v2:write-agent-brief`，不生成目标、摘要、拆解、优先级、方案或下一步指令。启动后，Main Session 原样转发用户消息与 Agent 的问题、状态和结果，不改写、总结、解释、合并或附加指导，也不负责集成；只有传输所需的发送方标识，以及从用户消息或 accepted authority 机械读取的精确 ID、锚点和状态可以附加。对“推进 Task 集合”或“完成 Milestone”的持续请求，只执行下述确定性续派发。
+Main Session 接收用户指令时只按固定职责选择目标 Agent，并把用户完整原话不改写地交给它；Main Session 不使用 `gmgn-v2:write-agent-brief`，不生成目标、摘要、拆解、优先级、方案或下一步指令。启动后，Main Session 原样转发用户消息与 Agent 的问题、状态和结果，不改写、总结、解释、合并或附加指导，也不负责集成；只有传输所需的发送方标识，以及从用户消息或 accepted authority 机械读取的精确 ID、锚点和状态可以附加。Main Session 不代替 Agent 履行职责或创建、管理其工作所需的子 Agent；这不限制 Main Session 自身已明确规定的机械派发和续派发。
 
 推进 Task 集合或完成 Milestone 时，Main Session 机械读取 approved Task.md：派发状态为 `pending`、所有 prerequisite 已在目标分支 `closed`、且没有 active 或 unresolved blocked 执行的 Task。Runner 返回 `Task completed` 和 merge commit 后，Main Session 刷新同一目标分支并再次扫描，持续派发新解锁 Task。
 
