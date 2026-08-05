@@ -32,7 +32,7 @@ def require(condition: bool, message: str) -> None:
 def validate() -> None:
     plugin = json.loads((ROOT / ".codex-plugin/plugin.json").read_text())
     require(plugin["name"] == "gmgn-v2", "插件名必须为 gmgn-v2")
-    require(plugin["version"] == "0.1.2", "发布版本必须为 0.1.2")
+    require(plugin["version"] == "0.1.3", "发布版本必须为 0.1.3")
 
     marketplace = json.loads((ROOT / ".agents/plugins/marketplace.json").read_text())
     require(re.fullmatch(r"[A-Za-z0-9_-]+", marketplace["name"]) is not None,
@@ -114,6 +114,8 @@ def validate() -> None:
         for shared_rule_body in (
             "Use DocStar first for cross-document Markdown search",
             "Use CodeGraph first for source-code search",
+            "including creating, monitoring, and handling every child Agent required by that work",
+            "transport, not an ownership transfer",
             'wait_agent({"timeout_ms":600000})', "list_agents", "interrupt_agent",
         ):
             require(shared_rule_body not in instructions,
@@ -128,6 +130,13 @@ def validate() -> None:
         "Use DocStar first for cross-document Markdown search",
         "Use CodeGraph first for source-code search",
         "Use fallback search only after recording why DocStar or CodeGraph cannot be used",
+        "Outcome ownership",
+        "including creating, monitoring, and handling every child Agent required by that work",
+        "transport, not an ownership transfer",
+        "required user or external input is unavailable", "authorization is missing",
+        "Return the exact result, question, or blocker", "resume the same owning Agent",
+        "must not take over an Agent's responsibilities",
+        "does not restrict the mechanical dispatch and continuation explicitly assigned to Main Session",
         'wait_agent({"timeout_ms":600000})', "do not call `list_agents`",
         "complete 10-minute wait expires with no event", "call `list_agents` once",
         "Do not repeatedly poll, send heartbeat messages, or inspect logs to probe progress",

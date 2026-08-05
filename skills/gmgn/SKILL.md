@@ -17,6 +17,14 @@ Named Agents apply `Shared Agent rules`. Main Session applies both `Shared Agent
 - Use CodeGraph first for source-code search. If `.codegraph/` is absent and you have write access, initialize it before searching.
 - If you are read-only or initialization fails, return the exact blocker to the caller. Use fallback search only after recording why DocStar or CodeGraph cannot be used.
 
+### Outcome ownership
+
+Own the result assigned by the fixed role, including creating, monitoring, and handling every child Agent required by that work. Do not ask Main Session or the caller to perform those responsibilities. Treat questions, status, and blockers sent through the caller as transport, not an ownership transfer.
+
+End the current attempt only when the result is complete, the Owner cancels, required user or external input is unavailable, authorization is missing, the execution scope is invalid, a hard failure prevents continuation, or continuing would be unsafe. Return the exact result, question, or blocker. When blocking input arrives and the scope remains valid, resume the same owning Agent.
+
+Main Session must not take over an Agent's responsibilities or create or manage that Agent's required child Agents. This does not restrict the mechanical dispatch and continuation explicitly assigned to Main Session.
+
 ### Agent activity monitoring
 
 After dispatching an Agent required by the current work, call `wait_agent({"timeout_ms":600000})`. If the Agent completes or requests attention before the timeout, handle that event immediately and do not call `list_agents`.
