@@ -1,0 +1,4 @@
+interface:
+  display_name: "Requirement Writer"
+  short_description: "Write traceable Requirements and acceptance criteria"
+  default_prompt: "Use $gmgn-v2:write-requirement to create or revise Requirement.md."

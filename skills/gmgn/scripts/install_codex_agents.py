@@ -19,7 +19,7 @@ def effective_codex_home() -> Path:
 def install() -> tuple[Path, list[str], list[str]]:
     sources = sorted(SOURCE_DIR.glob("gmgnv2_*.toml"))
     if not sources:
-        raise ValueError(f"未找到 GMGN V2 Agent 配置: {SOURCE_DIR}")
+        raise ValueError(f"No GMGN V2 Agent profiles found: {SOURCE_DIR}")
 
     destination_dir = effective_codex_home() / "agents"
     destination_dir.mkdir(parents=True, exist_ok=True)
@@ -29,7 +29,7 @@ def install() -> tuple[Path, list[str], list[str]]:
     for source in sources:
         destination = destination_dir / source.name
         if destination.is_symlink():
-            raise ValueError(f"拒绝覆盖符号链接: {destination}")
+            raise ValueError(f"Refusing to overwrite symlink: {destination}")
         if destination.is_file() and destination.read_bytes() == source.read_bytes():
             unchanged.append(source.name)
             continue
@@ -43,12 +43,12 @@ def main() -> int:
     try:
         destination, installed, unchanged = install()
     except (OSError, ValueError) as exc:
-        print(f"GMGN V2 Agent 安装失败: {exc}", file=sys.stderr)
+        print(f"GMGN V2 Agent installation failed: {exc}", file=sys.stderr)
         return 1
 
-    print(f"GMGN V2 Agent 目录: {destination}")
-    print(f"已同步: {', '.join(installed) if installed else 'none'}")
-    print(f"未变化: {', '.join(unchanged) if unchanged else 'none'}")
+    print(f"GMGN V2 Agent directory: {destination}")
+    print(f"Installed: {', '.join(installed) if installed else 'none'}")
+    print(f"Unchanged: {', '.join(unchanged) if unchanged else 'none'}")
     return 0
 
 

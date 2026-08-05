@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Definition Writer"
+  short_description: "Create or revise the project root definition"
+  default_prompt: "Use $gmgn-v2:write-project-definition to create or revise ProjectDefinition.md."
