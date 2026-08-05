@@ -18,13 +18,13 @@ The caller has already selected the target Agent. This Skill only prepares that 
 ## Compact form
 
 ```text
-目标 Agent：
-目标：
-当前事实：
-权威锚点：
-工作位置与写入边界：
-已确定选择与授权：
-返回：
+Target Agent:
+Objective:
+Current facts:
+Authority anchors:
+Work location and write boundary:
+Resolved choices and authorization:
+Return:
 ```
 
 Omit empty fields. An anchor is normally a path, section, Task ID, commit, or candidate identifier. Do not copy evidence that the Agent can read from that anchor.
@@ -47,20 +47,14 @@ The brief is a trigger and current input, not a restriction on a document Agent'
 
 | Agent | Inputs needed when applicable |
 | --- | --- |
-| `gmgnv2_whitepaper` | user objective; existing WhitePaper anchor; known constraints or unresolved owner choices |
-| `gmgnv2_decision` | ruling question; affected authority; existing Decision anchor; decision scope |
-| `gmgnv2_roadmap` | accepted WhitePaper and relevant Decision anchors; current Roadmap; requested planning outcome |
-| `gmgnv2_goal` | Milestone identifier; accepted Roadmap anchor; current Goal; requested outcome |
-| `gmgnv2_requirement` | accepted Goal anchor; affected users or behavior; current Requirement; known constraints |
-| `gmgnv2_design` | accepted Requirement anchors; repository or system context; current Design and Contract anchors |
-| `gmgnv2_task` | accepted Requirement and Design anchors; current Task document; requested decomposition or change |
-| `gmgnv2_runner` | one Task ID and row anchor; upstream anchors; recorded Task state; repository baseline; existing branch or workspace; external-operation authorization |
-| `gmgnv2_coder` | fixed Task and Card anchors; workspace and baseline; allowed write boundary; acceptance checks; requested candidate return |
-| `gmgnv2_reviewer` | fixed candidate identifier or exact diff; authority anchors; relevant test surface; requested finding format |
-| `gmgnv2_verifier` | fixed candidate; exactly one recorded trigger; one independent question; authority-defined observable and pass condition; available environment |
-| `gmgnv2_critic` | fixed document candidate; document type; upstream anchors; requested finding format; for follow-up, prior findings and repair delta |
-| `gmgnv2_researcher` | one bounded fact question; source and time limits; required output format |
-| `gmgnv2_close_milestone` | Milestone anchor; its Task and integration status; recorded completion conditions; required aggregate checks |
-| `gmgnv2_release` | accepted candidate; version and release target; existing evidence; publication or deployment authorization |
+| `gmgnv2_project_designer` | user objective; existing Project Definition, Log, and Roadmap anchors; known constraints; user reference projects or explicit none; requested definition or planning outcome; repository remote and target branch; target baseline; existing document branch, workspace, and PR if any; GitHub write and merge authorization |
+| `gmgnv2_architect` | target Milestone identifier and user-approved Roadmap anchor; applicable Project Definition anchor; current Requirement, Design Bundle/Contract, and Task anchors; repository context; requested R-D-T outcome; known constraints; repository remote and target branch; target baseline; existing document branch, workspace, and PR if any; GitHub write and merge authorization |
+| `gmgnv2_runner` | one Task ID and row anchor; upstream anchors; recorded Task state; repository remote and target branch; baseline commit; existing Task branch, workspace, and PR if any; GitHub write authorization |
+| `gmgnv2_auditor` | one concrete requested action and exactly one required audit Skill: `$gmgn-v2:critic`, `$gmgn-v2:code-review`, or `$gmgn-v2:verify`; fixed input candidate; authority, pass condition, declared write boundary and serial write handoff when Critic or Code Review may repair; environment when Verify observes; requested return |
+| `gmgnv2_researcher` | one bounded research question; decision it informs; claims and current anchors; inclusion and exclusion criteria; allowed source classes and recency or version requirements; caller-owned comparison dimensions or metric definitions; stopping condition; whether factual synthesis is requested; required return fields |
+| `gmgnv2_close_milestone` | Milestone anchor; repository remote and target branch; its Task PR and integration status; existing closure branch or PR; recorded completion conditions; required aggregate checks; GitHub write authorization |
+| `gmgnv2_release` | accepted candidate and target-branch commit; repository remote and target branch; version and release target; existing evidence; publication, tag, Release, and asset authorization |
+
+For Auditor, describe the work itself rather than setting mode or audit_type. Do not combine document Critic, code Review, and independent Verify in one brief. The selected Skill defines whether a successor candidate may be written; the brief cannot grant Verify permission to modify its candidate.
 
 Do not add missing inputs that do not apply. If a required current fact cannot be found or resolved, return that single gap to the caller instead of inventing it.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Writer"
+  short_description: "Split accepted design into parallel executable tasks"
+  default_prompt: "Use $gmgn-v2:write-task to create or revise Task.md."

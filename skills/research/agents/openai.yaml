@@ -1,0 +1,4 @@
+interface:
+  display_name: "Research"
+  short_description: "Collect and synthesize bounded evidence without deciding"
+  default_prompt: "Use $gmgn-v2:research to answer this bounded research question with traceable evidence."

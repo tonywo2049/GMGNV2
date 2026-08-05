@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roadmap Writer"
+  short_description: "Split projects into acceptable implementation milestones"
+  default_prompt: "Use $gmgn-v2:write-roadmap to create or revise ROADMAP.md."

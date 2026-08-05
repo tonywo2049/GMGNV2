@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Bundle Writer"
+  short_description: "Turn accepted requirements into an implementable design"
+  default_prompt: "Use $gmgn-v2:write-design-bundle to create or revise an implementable Design Bundle."

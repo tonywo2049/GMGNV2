@@ -17,6 +17,7 @@
   "interface": {
     "displayName": "GMGN V2",
     "shortDescription": "Agent-driven delivery with traceable documents and parallel Task execution",
+    "longDescription": "Turn product ideas into researched project definitions, executable roadmaps, requirements, technical designs, parallel Tasks, independently reviewed implementation, Milestone closure, and authorized releases.",
     "developerName": "Tony",
     "category": "Productivity",
     "capabilities": ["Read", "Write"],

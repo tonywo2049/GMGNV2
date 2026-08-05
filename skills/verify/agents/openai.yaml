@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify"
+  short_description: "Answer one independent verification question"
+  default_prompt: "Use $gmgn-v2:verify to answer this independent verification question."
