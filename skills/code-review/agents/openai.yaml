@@ -1,4 +1,4 @@
 interface:
   display_name: "Code Review"
-  short_description: "Review and repair one bounded implementation candidate"
-  default_prompt: "Use $gmgn-v2:code-review to review this fixed input candidate and repair only bounded findings."
+  short_description: "Independently review correctness and simplicity"
+  default_prompt: "Use $gmgn-v2:code-review and $ponytail:ponytail to independently reconstruct required behavior, challenge this fixed implementation candidate through real call paths and plausible failures, and repair only bounded findings."

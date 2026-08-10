@@ -1,4 +1,4 @@
 interface:
   display_name: "Requirement Writer"
-  short_description: "Write traceable Requirements and acceptance criteria"
-  default_prompt: "Use $gmgn-v2:write-requirement to create or revise Requirement.md."
+  short_description: "Write natural-language project requirements"
+  default_prompt: "Use $gmgn-v2:write-requirement to create or revise the current human-readable product requirement baseline."

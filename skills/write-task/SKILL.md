@@ -1,21 +1,21 @@
 ---
 name: write-task
-description: Create or semantically revise Task.md from accepted Requirement/AC and a complete Design Bundle. Use to split implementation and its required verification into stable, independently executable, verifiable, integrable, and maximally parallel results with only real prerequisites.
+description: Create or semantically revise Task.md from accepted Spec/AC and a complete Design Bundle. Use to split implementation and its required verification into stable, independently executable, verifiable, integrable, and maximally parallel results with only real prerequisites.
 ---
 
 # Write Task
 
 ## Preserve its role
 
-Treat Task.md as the normative Milestone execution index downstream of accepted Requirement/AC and the complete Design Bundle. It records what independent results must be delivered, not how to implement them.
+Treat Task.md as the normative Milestone execution index downstream of accepted Spec/AC and the complete Design Bundle. It records what independent results must be delivered, not how to implement them.
 
 ## Keep the DocStar machine surface
 
-Use the English frontmatter keys `locale`, `purpose`, `upstream`, `downstream`, `status`, `type`, and `nature`, with `type: task` and `nature: normative`. Write frontmatter values as plain unquoted text; keep multiple Markdown links comma-separated on one unquoted line. Use real relative Markdown links or explicit unquoted `none`, and keep existing `upstream`/`downstream` edges reciprocal. Link the root Design upstream and existing Task Cards downstream; do not link a Card before it exists. Use only `draft`, `pending-approval`, `approved`, or `closed` for document `status`.
+Use the English frontmatter keys `locale`, `purpose`, `upstream`, `downstream`, `status`, `type`, and `nature`, with `type: task` and `nature: normative`. Write frontmatter values as plain unquoted text; keep multiple Markdown links comma-separated on one unquoted line. Use real relative Markdown links or explicit unquoted `none`, and keep existing `upstream`/`downstream` edges reciprocal. Link the root Design upstream. Link a Task Card downstream only after its Task PR merges that Card into the target branch; Main Session may add that newly valid reciprocal link in the same mechanical closure update. Use only `draft`, `pending-approval`, `approved`, or `closed` for document `status`.
 
-Keep the document candidate `draft`; change its document `status` to `approved` only after the configured Critic and automatic-acceptance gate pass. Task-row status remains the execution state and is separate.
+Keep a new or semantic document candidate `draft`; change its document `status` to `approved` only after the configured Critic and automatic-acceptance gate pass. A caller-classified mechanical edit preserves the current document status. Task-row status remains the execution state and is separate.
 
-Use `T<n>`, `T<n>.<n>`, `M<n>-T<n>`, or `M<n>-T<n>.<n>` IDs. Keep exactly one canonical Task table with `| # | task | spec anchor | prerequisite | status | execution |`; write every first-column ID as `| **<Task ID>** |`. Task entities outside it are not authoritative. When a Task is materialized, its `execution` cell links to `execution/<Task ID>/Card.md`.
+Use `T<n>`, `T<n>.<n>`, `M<n>-T<n>`, or `M<n>-T<n>.<n>` IDs. Keep exactly one shared canonical Task table with `| # | task | spec anchor | prerequisite | status | execution |`; write every first-column ID as `| **<Task ID>** |`. Task entities outside it are not authoritative. A dispatched Task has one `execution/<Task ID>/Card.md` and `Log.md` pair in its Task branch, and that pair merges through the Task PR. Its `execution` cell is `none` before a durable remote checkpoint exists, then the immutable Git object reference `<commit>:execution/<Task ID>/Card.md`.
 
 When DocStar is available, use its `gmgn-v2` conventions and run its structural check before handoff; do not combine a discovered project-local conventions file with `--preset gmgn-v2`. Structural results do not decide Task boundaries or acceptance.
 
@@ -24,21 +24,29 @@ Keep the table:
 | # | task | spec anchor | prerequisite | status | execution |
 | --- | --- | --- | --- | --- | --- |
 
-Replace current status and execution values instead of appending history. Execution contains only the current execution entry link.
+Replace current status and execution values instead of appending history. Execution contains only `none` or the current immutable Card reference.
 
 ## Keep one Task-row state machine
 
-Use only `pending`, `active`, `blocked`, `closed`, or `cancelled` in the Task-row `status` column:
+Use only `waiting`, `ready`, `runner-active`, `architect-required`, `architect-active`, `blocked`, or `closed` in the Task-row `status` column:
 
-- Architect creates a required Task as `pending`.
-- Runner changes `pending` or explicitly resumed `blocked` to `active` when it owns the execution attempt.
-- Runner changes `active` to `blocked` only when it ends with one exact unresolved blocker and a recoverable checkpoint.
-- Runner places `closed` in the final Task PR candidate; it becomes authoritative only when that PR merges into the target branch.
-- Architect changes `pending` or `blocked` to `cancelled` only when accepted upstream authority removes the result. A `closed` Task never reopens; a later defect requires a new Task.
+- Architect initializes a new Task as `ready` when every prerequisite is `closed`, otherwise as `waiting`.
+- After the Task document is accepted, Main Session is the sole writer of runtime status, execution references, and a reciprocal link to a newly merged Card. Runner and Architect return the requested next status and evidence; Main Session persists it without semantic interpretation.
+- Main Session changes `waiting` to `ready` when every prerequisite is `closed`.
+- Main Session changes `ready` to `runner-active` immediately before creating or waking its Runner; if creation fails, restore `ready`.
+- Main Session changes `runner-active` to `architect-required` when Runner returns that exact status for a missing S-D-T decision, or to `blocked` when Runner returns an exact non-S-D-T blocker and the condition for retry.
+- Main Session changes `runner-active` to `closed` only after confirming the returned Task implementation commit on the remote target branch.
+- Main Session changes every current `architect-required` row to `architect-active` immediately before creating one repair Architect; if creation fails, restore `architect-required`.
+- After the repair is accepted, Architect returns `ready`, `waiting`, or `blocked` for each input row and Main Session persists it. Architect removes an unclosed Task row when accepted authority removes that result.
+- Main Session changes `blocked` only after the user explicitly names that Task and requests retry. It becomes `ready` when every prerequisite is `closed`, otherwise `waiting`.
 
-Main Session mechanically dispatches `pending` rows whose prerequisites are `closed`. A `blocked` row requires an explicit resume trigger showing that its recorded blocker changed. Never dispatch `active`, `closed`, or `cancelled` rows. Before dispatching a `pending` row from the target branch, also check the current Task branch, PR, Card, Log, and active-Agent registry so an in-flight or blocked execution is not duplicated.
+A `closed` Task never reopens; a later defect requires a new Task.
 
-Until its PR merges, the Task branch, Card, and Log are execution-state evidence rather than accepted completion authority. Keep semantic Task meaning in the canonical table and current attempt details in Card and Log.
+A Task-row runtime transition, execution-reference update, or newly valid merged-Card reciprocal link uniquely determined by this state machine is mechanical and does not independently trigger Critic. When the same Architect change set also revises Task meaning, result boundaries, anchors, or prerequisites, include those semantic Task deltas in the one integrated S-D-T candidate reviewed after all affected layers are complete.
+
+Main Session mechanically dispatches only `ready` rows. The current shared Task-row status is authoritative: Log content is evidence and repair input, never a routing condition. Never dispatch any other state.
+
+Keep semantic Task meaning and current execution state in the one shared canonical table. Card and Log are Task-specific execution evidence owned in the Task branch and merged through its PR. Task-branch changes contain only implementation, tests, task-local code documentation, Card, Log, and recoverable checkpoints; they never change Task.md or upstream authority.
 
 ## Split by independent results
 
@@ -77,7 +85,7 @@ Do not use ordinary code dependency, likely file overlap, Git conflict, staffing
 
 Each spec anchor uses exact provided Project Definition, R/AC, Design, and applicable Contract anchors for the Task result. Do not invent a path or anchor; return a precise missing anchor instead. Do not copy upstream meaning.
 
-Do not put validation cases, commands, file scopes, locks, blockers, commits, candidates, review notes, evidence, progress narrative, implementation steps, or execution history in Task.md.
+Do not put validation cases, commands, file scopes, locks, blockers, candidates, review notes, evidence, progress narrative, implementation steps, or execution history in Task.md. The execution cell's immutable Card reference is its only implementation commit reference.
 
 Delete work without a current AC or accepted Design owner. Do not create tentative, placeholder, speculative, or future Tasks.
 
@@ -99,5 +107,6 @@ For a new Milestone execution index, cover every in-scope AC and accepted Design
 - Prerequisites are real result dependencies and the graph is acyclic.
 - Independent coding work remains maximally parallel.
 - Task.md contains only the execution index, current status, and execution entry links.
-- Every Task row uses the fixed state machine; only a merged final Task PR makes `closed` authoritative.
-- Task IDs, frontmatter, reciprocal links, and materialized execution links satisfy the DocStar `gmgn-v2` machine surface.
+- Every Task row uses the fixed state machine; only Main Session's remote merge confirmation permits `runner-active → closed`.
+- Task-branch changes contain only the current Task's implementation, tests, task-local code documentation, Card, Log, and checkpoints.
+- Task IDs and frontmatter satisfy the DocStar `gmgn-v2` machine surface; an unmerged execution reference is a Git object anchor, while a merged Card uses a real reciprocal Markdown link.

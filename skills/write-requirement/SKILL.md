@@ -1,78 +1,71 @@
 ---
 name: write-requirement
-description: Create or semantically revise Requirement.md from an accepted Roadmap Milestone. Use to define traceable user- or system-observable behavior, scenarios, constraints, boundaries, error outcomes, numbered Requirements, and decidable acceptance criteria without choosing implementation or tests.
+description: Create or semantically revise natural-language Requirement documents from an accepted ProjectDefinition.md, user decisions, and applicable information. Use to maintain the accepted product requirements, product specifications, and explicit TBDs that Roadmap, Spec, and Design need as their current product baseline.
 ---
 
 # Write Requirement
 
 ## Preserve its role
 
-Treat Requirement.md as the normative behavioral specification between an accepted Roadmap Milestone and the Design Bundle. It must make the Milestone's acceptance criteria and deliverables precise enough to design and accept without inventing product meaning downstream.
+Treat each Requirement as evolving, human-facing product authority between the Project Definition and Roadmap. Record the currently accepted product requirements and specifications for one coherent domain or cross-Milestone capability, plus explicit product questions that remain TBD.
 
-Write in the project's language for readers who do not share the conversation context. Choose the organization that best expresses the behavior. Do not impose a generic section template.
+The Project Definition owns project scope, goals, principles, and non-goals. A Requirement may add detail within that accepted scope. Return the exact Project Definition gap when a proposed requirement changes those project-level boundaries.
+
+Approval accepts the current Requirement baseline. It does not claim that the document will never change or that every recorded TBD is resolved.
+
+Choose the smallest useful document set. Follow the repository's semantic layout; when none exists, keep Requirements under `requirements/`. Do not create one file per feature, a mandatory index, an empty placeholder, or one document that mixes unrelated domains. Do not impose a fixed body template.
 
 ## Keep the DocStar machine surface
 
-Use the English frontmatter keys `locale`, `purpose`, `upstream`, `downstream`, `status`, `type`, and `nature`, with `type: requirement` and `nature: normative`. Write frontmatter values as plain unquoted text; keep multiple Markdown links comma-separated on one unquoted line. Use real relative Markdown links or explicit unquoted `none`, and keep existing `upstream`/`downstream` edges reciprocal. Link the accepted Roadmap as upstream and an existing root Design as downstream; do not link a missing future document. Use only `draft`, `pending-approval`, `approved`, or `closed` for document `status`.
+Use the English frontmatter keys `locale`, `purpose`, `upstream`, `downstream`, `status`, `type`, and `nature`, with `type: requirement` and `nature: normative`. Write frontmatter values as plain unquoted text; keep multiple Markdown links comma-separated on one unquoted line. Use real relative Markdown links or explicit unquoted `none`, and keep existing reciprocal links. Link the accepted Project Definition upstream and an existing Roadmap downstream; never link a missing future document.
 
-Keep a candidate `draft`; change it to `approved` only after the configured Critic and automatic-acceptance gate pass.
+Use only `draft`, `pending-approval`, `approved`, or `closed` for document `status`. Keep a semantic candidate `draft` during writing and Critic review, set it to `pending-approval` after Critic pass, and change it to `approved` only after explicit user approval. An approved Requirement may contain explicit TBDs.
 
-Use `R<n>` for each Requirement and `R<n>-AC<n>` for each AC. Define each machine ID once in its own list item under a heading that clearly names its kind, and bold only the ID. The machine form does not impose a generic section outline or heading order.
+Write for human readers. Use descriptive headings and stable anchors where Roadmap needs traceability. Do not define `R<n>` or `R<n>-AC<n>` here; Spec creates those machine identifiers only for allocated, sufficiently clear product meaning.
 
-When DocStar is available, use its `gmgn-v2` conventions and run its structural check before handoff; do not combine a discovered project-local conventions file with `--preset gmgn-v2`. Structural results do not decide Requirement meaning or acceptance.
+When DocStar is available, use its `gmgn-v2` conventions and run its structural check before handoff; use a discovered project-local conventions file instead of also passing a preset. Treat structural results as evidence, never semantic approval.
 
-## Derive only from accepted authority
+## Maintain the current product baseline
 
-Use the target accepted Roadmap Milestone, applicable Project Definition anchors, and external constraints with explicit sources. Implementation, tests, code, or downstream documents can expose a gap but cannot silently define Requirement meaning.
+Use the current user instruction, accepted authority, applicable project material, and sourced constraints. Treat every input as information to reconcile through the normal authority rules; do not create source-specific writing rules.
 
-Give each retained Requirement a stable R identifier. Each R expresses one coherent observable behavior, capability, or constraint and names the Roadmap acceptance criterion, deliverable, Project Definition invariant, or sourced external constraint that owns it.
+State the product meaning needed to distinguish acceptable from unacceptable outcomes for the scope being advanced. Include precise product rules when downstream work would otherwise need to choose between observably different results. Let the actual domain determine the document structure and level of detail.
 
-Cover every target Milestone acceptance criterion and deliverable. Keep the trace explicit:
+Do not treat silence in the Project Definition as proof that an in-scope requirement does not exist. Do not treat supplied material as accepted merely because it is detailed. Ask for a decision when current authority does not determine which product meaning applies.
 
-Roadmap Milestone acceptance criterion or deliverable → R/AC
+## Track TBDs without blocking unrelated work
 
-Do not turn a purely technical reference into a Requirement unless it is already an accepted project boundary or creates an externally observable constraint.
+Use `TBD` for a known product question that is not yet decided. Record enough context to determine what remains open and whether it affects the scope currently being advanced.
 
-## Analyze behavior before writing
+Do not require every TBD to be resolved before approving the Requirement or revising Roadmap. If a TBD changes the product meaning needed by the current Spec, Design, or Task, return that exact gap and stop only the affected work. Preserve unrelated progress.
 
-For each upstream acceptance obligation, identify the actor or external system, trigger or input, relevant precondition, state change, observable success, and observably distinct failure. Check whether empty, invalid, boundary, duplicate, retry, interruption, permission, and state-transition cases are applicable. This is coverage analysis, not a required document outline or a test plan.
+Resolving a TBD is a semantic Requirement revision and follows the normal Critic and explicit user-approval gate. A downstream document may expose or request that revision, but it must not choose the answer itself.
 
-Retain only cases that can change the acceptance conclusion and have an accepted owner. Do not multiply AC for imagined possibilities. Do not invent a term definition, validity rule, fidelity guarantee, default, ordering, interface behavior, or error semantic merely to complete the coverage. If an applicable case requires an observable choice that accepted authority does not own, return the exact gap or ask one user question instead of selecting a plausible rule.
+## Separate product meaning from implementation
 
-Do not operationally redefine an ambiguous upstream condition. If terms such as verified, confirmed, active, available, or ready could mean a user assertion, recorded system state, or external fact, and that difference changes permission or a state transition, return the exact missing definition. A boundary disclaimer does not make an invented definition acceptable.
+A choice belongs in Requirement when alternatives would change product results, externally observable behavior, compatibility, safety boundaries, operating conclusions, or acceptance conclusions.
 
-## Write decidable acceptance criteria
+Leave a choice to Design only when the alternatives are equivalent under all accepted product meaning. If that boundary is unclear, return the Requirement gap instead of assuming the choice is technical.
 
-Give each R the minimum acceptance criteria needed to decide pass or fail, using stable identifiers such as R1-AC1. State the applicable precondition, action or check, and observable result; Given/When/Then is optional.
+## Leave allocation and implementation downstream
 
-Cover the core success path and every applicable rejection, failure, recovery, boundary, or unchanged-state outcome needed to distinguish correct behavior. Keep an outcome only when an upstream acceptance obligation or invariant owns it; otherwise report the missing decision.
+Do not assign behavior to Milestones, define schedules, or describe temporary implementation shortcuts. Roadmap allocates the current accepted baseline. Spec translates only the allocated and sufficiently clear meaning into traceable, decidable R/AC. Design chooses the technical implementation. None of them may silently add or change product meaning.
 
-When a Milestone success signal depends on multiple R, accepted components, or separately observable outcomes holding together, add at least one stable composite AC with one decidable verdict for the joint result. Link every participating R and the owning Milestone signal. Local ACs remain necessary but are not sufficient; never infer the complete result only because each local AC passes.
-
-An AC is behavioral authority from which tests can be derived. It must not prescribe test layers, frameworks, fixtures, commands, or implementation-specific assertions.
-
-For a Requirement-owned threshold, state the value, unit, scope or measurement condition, and pass/fail rule. Inherited values link to their accepted authority. Replace words such as reasonable, complete, sufficient, high-performance, or robust when they do not produce a decidable result.
-
-## Keep the boundary
-
-Define what users or external systems can observe, not architecture, interfaces, data structures, algorithms, implementation steps, Task boundaries, test code, or evidence.
-
-Apply a deletion test to every R and AC: remove it unless its absence would make a current Milestone acceptance criterion, deliverable, accepted project invariant, or sourced external constraint fail. Future reuse, possible scale, configurability, or implementation convenience is not an owner.
+When research, Spec, Design, implementation, Review, or verification reveals a product change, revise the Project Definition for project-level boundaries or the Requirement for in-scope product meaning. Preserve unaffected meaning and identify the real impact on Roadmap, Spec, Design, Contract, and Task documents.
 
 ## Create or revise
 
-For a new target Milestone, derive the complete minimal Requirement set. For a semantic revision, preserve unaffected R/AC and stable identifiers, update every affected trace, remove obligations that lost their owner, and identify the real Design and Task impact.
+Create a Requirement only when accepted scope needs durable product detail beyond Project Definition granularity. Every new document and every semantic revision requires one complete Critic pass and explicit user approval. Mechanical link, anchor, formatting, or status synchronization that preserves meaning does not require another semantic approval.
 
 ## Check before handoff
 
-- Every Milestone acceptance criterion and deliverable is covered.
-- Every R/AC has one explicit upstream owner and a stable identifier.
-- Every AC is externally decidable and changes the acceptance conclusion.
-- Every multi-R or multi-component Milestone signal has a decidable composite AC; local ACs are not treated as proof of the joint result.
-- Applicable success, failure, negative, boundary, and state-transition behavior has been checked without inventing semantics.
-- Every behavior-gating term or precondition has accepted meaning; no disclaimer hides an invented definition.
-- Thresholds have complete value, unit, scope, condition, and pass/fail meaning.
-- No observable definition, default, safeguard, or error rule lacks an accepted owner.
-- No implementation, Design, Task, test code, evidence, or speculative behavior has leaked into Requirement.
-- A revision preserves unaffected meaning and identifies its downstream impact.
-- Every R/AC has one DocStar-compatible definition, and the seven frontmatter fields and reciprocal links are valid.
+- The current scope has enough accepted product meaning to proceed without downstream invention.
+- Known requirements, specifications, and TBDs are represented accurately.
+- No TBD is presented as an accepted product rule.
+- A TBD blocks only work whose product result depends on it.
+- Roadmap can allocate the accepted meaning without redefining it.
+- Spec can formalize the allocated meaning without adding product semantics.
+- Every choice left to Design is equivalent under the accepted product meaning.
+- No Milestone allocation, implementation, Task, test procedure, or evidence has leaked into the Requirement.
+- Every semantic change identifies affected downstream authority and waits for explicit user approval.
+- Stable anchors, frontmatter, reciprocal links, and the applicable DocStar structural check are valid.

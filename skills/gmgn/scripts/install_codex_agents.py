@@ -98,9 +98,13 @@ def atomic_write(path: Path, data: bytes) -> None:
 
 def sync(source_dir: Path = SOURCE_DIR) -> tuple[Path, list[str], list[str], list[str]]:
     sources = read_sources(source_dir)
+    version = plugin_version(source_dir)
     destination_dir = effective_codex_home() / "agents"
     destination_dir.mkdir(parents=True, exist_ok=True)
     state = read_state(destination_dir)
+    if state.get("plugin_version") == version:
+        return destination_dir, [], sorted(sources), []
+
     installed: list[str] = []
     unchanged: list[str] = []
     removed: list[str] = []
@@ -136,7 +140,7 @@ def sync(source_dir: Path = SOURCE_DIR) -> tuple[Path, list[str], list[str], lis
 
     managed_state = {
         "schema_version": 1,
-        "plugin_version": plugin_version(source_dir),
+        "plugin_version": version,
         "files": {name: digest(data) for name, data in sources.items()},
     }
     state_data = (json.dumps(managed_state, indent=2, sort_keys=True) + "\n").encode()
@@ -166,12 +170,10 @@ def check(source_dir: Path = SOURCE_DIR) -> tuple[Path, list[str]]:
         if state.get("files") != expected_hashes:
             issues.append("Managed Agent manifest does not match the plugin profiles")
 
-    for name, expected_hash in expected_hashes.items():
+    for name in expected_hashes:
         destination = destination_dir / name
         if destination.is_symlink() or not destination.is_file():
             issues.append(f"Missing regular Agent profile: {destination}")
-        elif digest(destination.read_bytes()) != expected_hash:
-            issues.append(f"Agent profile differs from the plugin: {destination}")
 
     return destination_dir, issues
 
@@ -237,7 +239,7 @@ def main(argv: list[str] | None = None) -> int:
                 for issue in issues:
                     print(issue, file=sys.stderr)
                 return 1
-            print(f"GMGN V2 Agent profiles match the plugin: {destination}")
+            print(f"GMGN V2 Agent profiles are installed for this plugin version: {destination}")
             return 0
 
         destination, removed = uninstall()

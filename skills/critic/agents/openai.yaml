@@ -1,4 +1,4 @@
 interface:
   display_name: "Critic"
-  short_description: "Review and repair deterministic document defects"
-  default_prompt: "Use $gmgn-v2:critic to review this fixed GMGN document candidate and repair only deterministic authority-preserving defects."
+  short_description: "Independently judge and repair document meaning"
+  default_prompt: "Use $gmgn-v2:critic to independently reconstruct the accepted semantic obligations for this fixed GMGN document candidate, challenge its completeness and downstream usability, repair every material finding within its boundary, and validate the final candidate."
