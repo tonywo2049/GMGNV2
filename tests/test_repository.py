@@ -52,10 +52,13 @@ class RepositoryTests(unittest.TestCase):
                 self.assertEqual(installer.main(["sync", "--hook"]), 0)
             self.assertEqual(json.loads(output.getvalue())["hookSpecificOutput"]["hookEventName"], "SessionStart")
 
+            customized = Path(temp_dir) / "agents/gmgnv2_runner.toml"
+            customized.write_bytes(customized.read_bytes() + b"\n# user customization\n")
             output = io.StringIO()
             with redirect_stdout(output):
                 self.assertEqual(installer.main(["sync", "--hook"]), 0)
             self.assertEqual(output.getvalue(), "")
+            self.assertTrue(customized.read_bytes().endswith(b"# user customization\n"))
 
     def test_installer_removes_stale_managed_profiles(self):
         installer = load_script("install_codex_agents")
@@ -68,20 +71,30 @@ class RepositoryTests(unittest.TestCase):
             state["files"][stale.name] = installer.digest(stale.read_bytes())
             state_path.write_text(json.dumps(state))
 
-            _, _, _, removed = installer.sync()
+            with patch.object(installer, "plugin_version", return_value="next-version"):
+                _, _, _, removed = installer.sync()
             self.assertEqual(removed, [stale.name])
             self.assertFalse(stale.exists())
 
-    def test_installer_detects_drift_and_uninstalls_only_v2(self):
+    def test_installer_preserves_customization_until_new_version(self):
         installer = load_script("install_codex_agents")
         with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"CODEX_HOME": temp_dir}):
             old_agent = Path(temp_dir) / "agents/gmgn_runner.toml"
             old_agent.parent.mkdir(parents=True)
             old_agent.write_text("v1")
             destination, installed, _, _ = installer.sync()
-            (destination / installed[0]).write_text("changed")
+            customized = destination / installed[0]
+            original = customized.read_bytes()
+            customized.write_bytes(original + b"\n# user customization\n")
 
-            self.assertTrue(installer.check()[1])
+            self.assertEqual(installer.sync()[1], [])
+            self.assertEqual(installer.check()[1], [])
+            self.assertNotEqual(customized.read_bytes(), original)
+
+            with patch.object(installer, "plugin_version", return_value="next-version"):
+                self.assertIn(customized.name, installer.sync()[1])
+            self.assertEqual(customized.read_bytes(), original)
+
             _, removed = installer.uninstall()
             self.assertEqual(len(removed), len(AGENTS))
             self.assertEqual(old_agent.read_text(), "v1")

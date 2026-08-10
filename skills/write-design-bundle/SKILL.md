@@ -1,39 +1,41 @@
 ---
 name: write-design-bundle
-description: Create or semantically revise an implementable Design Bundle from accepted Requirement and AC. Use after bounded external solution research to choose and justify the minimum architecture, close interfaces and data flows, and define risk-matched verification points without implementation or Task decomposition.
+description: Create or semantically revise an implementable Design Bundle from accepted Spec/AC and applicable Requirements. Apply the research gate and any necessary bounded implementation-reference research, then choose and justify the minimum architecture, close interfaces and data flows, and define risk-matched verification points without implementation or Task decomposition.
 ---
 
 # Write Design Bundle
 
 ## Preserve its role
 
-Treat the Design Bundle as the normative technical authority between accepted Requirement/AC and Task. It must remove shared and cross-unit implementation decisions that a Runner would otherwise have to invent.
+Treat the Design Bundle as the normative technical authority between accepted Spec/AC and Task. It must remove shared and cross-unit implementation decisions that a Runner would otherwise have to invent.
 
 Write in the project's language and choose the organization that best fits the system. Do not impose a generic section template or pre-create modules and contracts.
 
 ## Keep the DocStar machine surface
 
-For every Markdown file in the Bundle, use the English frontmatter keys `locale`, `purpose`, `upstream`, `downstream`, `status`, `type`, and `nature`. Write frontmatter values as plain unquoted text; keep multiple Markdown links comma-separated on one unquoted line. Use real relative Markdown links or explicit unquoted `none`, and reciprocal existing-document edges. `Design.md` uses `type: design`, `nature: normative`; split normative modules and Contracts also declare their own type and `nature: normative`, link to `Design.md`, and are linked back from it. Link the accepted Requirement upstream and an existing Task downstream; never link a missing future document. Use only `draft`, `pending-approval`, `approved`, or `closed` for document `status`.
+For every Markdown file in the Bundle, use the English frontmatter keys `locale`, `purpose`, `upstream`, `downstream`, `status`, `type`, and `nature`. Write frontmatter values as plain unquoted text; keep multiple Markdown links comma-separated on one unquoted line. Use real relative Markdown links or explicit unquoted `none`, and reciprocal existing-document edges. `Design.md` uses `type: design`, `nature: normative`; split normative modules and Contracts also declare their own type and `nature: normative`, link to `Design.md`, and are linked back from it. Link the accepted Spec upstream and an existing Task downstream; cite applicable Requirement anchors in the body instead of bypassing Spec in the document graph. Never link a missing future document. Use only `draft`, `pending-approval`, `approved`, or `closed` for document `status`.
 
-Keep the complete Bundle candidate `draft`; change every file in that same accepted Bundle to `approved` only after the configured Critic and automatic-acceptance gate pass.
+Keep a new or semantic complete Bundle candidate `draft`; change every file in that same accepted Bundle to `approved` only after the configured Critic and automatic-acceptance gate pass. A caller-classified mechanical edit preserves the current document status.
 
 Give each Design element referenced outside its defining text a stable `D<n>` ID and each Contract a stable `C<n>` ID. Define each machine ID once in its own list item under a heading that clearly names its kind, and bold only the ID. This does not prescribe Bundle heading order or file count.
 
 When DocStar is available, use its `gmgn-v2` conventions and run its structural check on the complete Bundle before handoff; a project-local conventions file replaces, rather than augments, the preset. Structural results cannot select a Design or accept the Bundle.
 
-## Require bounded solution research
+## Gate bounded implementation research
 
-Before semantic creation or revision, consume completed external research matched to the current delta and direct impact. Mechanical edits do not require new research.
+Before semantic creation or revision, determine whether the current delta depends on an unresolved external implementation fact that accepted authority, current code, and existing evidence cannot answer. A semantic Design change alone does not require new research, and a mechanical edit never does.
 
-Research must define the technical question, hard constraints, exclusions, comparison dimensions, source and version requirements, and the Design decision it supports. Prefer standards, official documentation, specifications, maintainer source and tests, release records, production reports, audits, or papers. Keep one credible candidate when only one fits, compare two when a real trade-off exists, and use a third only for a materially different credible path. A supported no-fit is valid.
+Record the accepted direction, unresolved fact, local facts already checked, allowed reference implementations, excluded alternatives, source and version requirements, requested synthesis, and stopping condition. When accepted authority already fixes the direction, research only how that direction is implemented, integrated, or reused; do not reopen substitute discovery. Compare alternatives only when accepted authority leaves a real technical choice open.
 
-Select against R/AC coverage, verified current-system constraints, compatibility, security boundaries, operational complexity, maintenance, adoption cost, and relevant scale or resource limits. Compare only credible choices that differ on a decisive dimension. Record the selected choice, decisive evidence, material trade-offs and consequences, and the condition that would justify revisiting it; do not create a full ADR or alternatives table when there is no real decision.
+Use one bounded Researcher question for each independent necessary fact. The question count follows unresolved facts, not blocker count. Prefer standards, official documentation, specifications, maintainer source and tests, release records, production reports, audits, or papers. Stop as soon as the implementation fact is established or an evidence-backed no-fit is reached.
+
+When a real choice remains, select against R/AC coverage, verified current-system constraints, compatibility, security boundaries, operational complexity, maintenance, adoption cost, and relevant scale or resource limits. Compare only credible choices that differ on a decisive dimension. Record the selected choice, decisive evidence, material trade-offs and consequences, and the condition that would justify revisiting it; do not create a full ADR or alternatives table when there is no real decision.
 
 Trace the critical user and system scenarios end to end before finalizing components. Make assumptions explicit and verify them against accepted authority or system facts. Do not preselect a stack that accepted authority has not fixed.
 
 Research informs technical choices; it cannot supply missing product behavior or turn an implementation convention into Requirement authority.
 
-When the Design includes an explicit API, or the current need could plausibly reuse an existing implementation, the completed research must include GitHub reference-code search. Prefer reuse or adaptation over redevelopment whenever a credible source slice satisfies current R/AC.
+When the unresolved fact concerns an explicit API or plausible implementation reuse, the bounded research must include one GitHub reference-code search. Stop when that search and the retained evidence establish the implementation fact or an evidence-backed no-fit. Prefer reuse or adaptation over redevelopment whenever a credible source slice satisfies current R/AC.
 
 For each reused reference, map the owning Design element to the repository, checked revision, path, and applicable symbol or code region; state the reuse or adaptation target and local landing point. Do not prescribe line-by-line changes. Do not evaluate license or authorization risk; neither gates reuse in this workflow.
 
@@ -100,7 +102,7 @@ For a new Design Bundle, derive the complete minimum implementable authority fro
 
 ## Check before handoff
 
-- Required solution research is complete and the selection or no-fit has primary evidence.
+- The research gate is recorded; every necessary external implementation fact has primary evidence or a supported no-fit, and fixed directions were not reopened.
 - Explicit APIs and plausible reuse opportunities include GitHub reference-code research; reused Design elements name the source region, adaptation target, and local landing point without license or authorization review.
 - No externally observable behavior was invented to fill a Requirement gap.
 - No accepted product behavior, shared parameter, or implementation-level decision remains for the Runner to invent.

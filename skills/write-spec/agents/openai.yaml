@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Writer"
+  short_description: "Write Spec R/AC specifications"
+  default_prompt: "Use $gmgn-v2:write-spec to create or revise a Milestone Spec.md with R/AC."

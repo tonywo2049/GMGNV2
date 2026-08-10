@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Brainstorm"
-  short_description: "Research and sharpen a project direction"
-  default_prompt: "Use $gmgn-v2:brainstorm to research and develop this project idea."
+  short_description: "Clarify direction with targeted references"
+  default_prompt: "Use $gmgn-v2:brainstorm to clarify this project direction and research only decision-changing questions."

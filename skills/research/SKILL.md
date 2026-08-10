@@ -11,6 +11,8 @@ Require one bounded question and only the inputs that apply: the decision it inf
 
 Treat the decision context as a relevance boundary, not permission to make the decision. Return the exact blocking gap when the question, authority, access, or stopping condition is not usable. Do not turn user research, competitive research, technical research, and metric research into separate modes.
 
+When the contract supplies an accepted direction, treat it as fixed and investigate only the requested implementation pattern, integration fact, or reusable source. Do not discover or compare substitutes unless the contract explicitly states that the direction remains open and authorizes alternative discovery.
+
 ## Match evidence to each claim
 
 Use the smallest credible source set that can answer the question. Source quality depends on the claim:
@@ -67,6 +69,7 @@ Keep raw search history, discarded weak sources, and recommendation prose out of
 ## Check before returning
 
 - There is one bounded research question and a usable stopping condition.
+- An accepted direction remained fixed; substitute discovery occurred only when the contract explicitly authorized it.
 - Every fact, calculation, and comparison has a source anchor and applicable context.
 - Claim type determined source choice; repeated claims were not counted as independent evidence.
 - User evidence distinguishes behavior from statements and reports frequency with a denominator.

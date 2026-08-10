@@ -1,5 +1,5 @@
 {
-  "description": "Keep installed GMGN V2 named Agents aligned with the enabled plugin version.",
+  "description": "Install GMGN V2 named Agents once per enabled plugin version.",
   "hooks": {
     "SessionStart": [
       {
@@ -9,7 +9,7 @@
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/skills/gmgn/scripts/install_codex_agents.py\" sync --hook",
             "timeout": 10,
-            "statusMessage": "Syncing GMGN V2 Agent profiles"
+            "statusMessage": "Checking GMGN V2 Agent profile version"
           }
         ]
       }
