@@ -19,7 +19,7 @@ Keep a new or semantic candidate `draft`; change it to `approved` only after the
 
 Use `R<n>` for each Requirement and `R<n>-AC<n>` for each AC. Define each machine ID once in its own list item under a heading that clearly names its kind, and bold only the ID. Preserve identifiers across revisions and keep them globally unique across Spec documents. The machine form does not impose a generic section outline or heading order.
 
-When DocStar is available, use its `gmgn-v2` conventions and run its structural check before handoff; do not combine a discovered project-local conventions file with `--preset gmgn-v2`. Structural results do not decide Spec meaning or acceptance.
+When DocStar is available, use its `gmgn-v1` preset and run its structural check before handoff; do not combine a discovered project-local conventions file with `--preset gmgn-v1`. Structural results do not decide Spec meaning or acceptance.
 
 ## Derive only from accepted authority
 

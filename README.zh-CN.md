@@ -2,14 +2,14 @@
 
 GMGN V2 是面向 Codex 的 Agent 驱动研发工作流。它把产品想法转化为可追溯的产品权威、可实施工作、经过独立审查的代码和明确的 Milestone 关闭结果。
 
-规范架构见 [GMGNV2.md](GMGNV2.md)。本文档只说明安装和使用。英文版见 [README.md](README.md)。
+规范运行契约和路由见 [`skills/gmgn/SKILL.md`](skills/gmgn/SKILL.md)。本文档只说明安装和使用。英文版见 [README.md](README.md)。
 
 ## GMGN V2 提供什么
 
 - 权威链：`Project Definition + Requirements → Roadmap → Spec → Design Bundle → Task`。
 - 只在产品决定需要时做针对性调研；只为未解决的外部实现事实做有边界的实现调研。
 - 新建或语义修订的 Project Definition 与 Requirement 需要明确批准；Roadmap 只需首次批准；语义文档候选需要独立 Critic。
-- 每个 Task 使用独立 branch、worktree 和 PR；Coder 执行 TDD 与 Ponytail，非机械候选还需独立 Review。
+- 每个 Task 使用一个 Runner 和一组 Card/Log；按已接受 Design 使用所需数量的仓库 branch、worktree 和 PR，不限制 PR 数量；Coder 执行 TDD 与 Ponytail，非机械候选接受一次完整独立 Review。
 - 按容量并行派发 Task，完成 Milestone 关闭，并只在明确请求后执行 Release。
 
 ## 环境要求
@@ -18,7 +18,7 @@ GMGN V2 是面向 Codex 的 Agent 驱动研发工作流。它把产品想法转�
 - Python 3.11 或更高版本，用于执行仓库验证。
 - Git 和 GitHub remote，用于完整 branch/PR 工作流。
 - Ponytail 插件及 `$ponytail:ponytail` Skill。Coder 修改代码或测试前使用它；Auditor 每次 Code Review 时也使用它。
-- DocStar 可选。存在时，GMGN V2 使用 `gmgn-v2` conventions 检查文档结构。
+- DocStar 和 CodeGraph 存在时是必选的仓库发现路径；只有不可用时才能跳过。CodeGraph 缺少索引时由 GMGN V2 自动初始化。
 
 当前 Codex 插件行为见官方 [Plugins 指南](https://learn.chatgpt.com/docs/plugins)和 [Codex CLI 插件命令](https://learn.chatgpt.com/docs/developer-commands?surface=cli#cli-codex-plugin)。
 
@@ -68,7 +68,7 @@ Agent 配置发生变化后，启动新的 Codex Session。
 使用 $gmgn-v2:gmgn，把 accepted 候选发布为 v1.0.0。
 ```
 
-只有明确调用 `$gmgn-v2:gmgn` 才会启用 GMGN V2。路由、文档接受、Task 状态、Git、关闭和 Release 规则统一见 [GMGNV2.md](GMGNV2.md)。
+只有明确调用 `$gmgn-v2:gmgn` 才会启用 GMGN V2。路由、文档接受、Task 状态、Git、关闭和 Release 规则统一见 [`skills/gmgn/SKILL.md`](skills/gmgn/SKILL.md)。
 
 ## 验证
 
@@ -87,7 +87,7 @@ python3 -m unittest discover -s tests -v
 python3 skills/gmgn/scripts/manage_codex_install.py uninstall
 ```
 
-该命令会卸载 `gmgn-v2` 插件，并只删除被记录为 GMGN V2 管理的命名 Agent 文件。它不会删除 GMGN V1 配置、项目文档、branch、PR 或仓库历史。
+该命令会卸载 `gmgn-v2` 插件，并只删除被记录为 GMGN V2 管理且未被修改的命名 Agent 文件。已修改或未登记的 Agent 文件会保留并报告。它不会删除 GMGN V1 配置、项目文档、branch、PR 或仓库历史。
 
 只有不再使用该 marketplace 中的任何插件时，才删除本地 marketplace：
 
@@ -109,7 +109,6 @@ codex plugin list --json
 .codex/agents/                   命名 Agent 配置
 hooks/                           SessionStart Agent 同步
 skills/                          Router、写作、调研、审查及安装工具
-GMGNV2.md                        规范工作流架构
 README.md                        英文使用说明
 README.zh-CN.md                  中文使用说明
 tests/                           机械仓库验证

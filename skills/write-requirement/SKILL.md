@@ -23,7 +23,7 @@ Use only `draft`, `pending-approval`, `approved`, or `closed` for document `stat
 
 Write for human readers. Use descriptive headings and stable anchors where Roadmap needs traceability. Do not define `R<n>` or `R<n>-AC<n>` here; Spec creates those machine identifiers only for allocated, sufficiently clear product meaning.
 
-When DocStar is available, use its `gmgn-v2` conventions and run its structural check before handoff; use a discovered project-local conventions file instead of also passing a preset. Treat structural results as evidence, never semantic approval.
+When DocStar is available, use its `gmgn-v1` preset and run its structural check before handoff; use a discovered project-local conventions file instead of also passing a preset. Treat structural results as evidence, never semantic approval.
 
 ## Maintain the current product baseline
 

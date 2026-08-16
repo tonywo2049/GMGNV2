@@ -36,11 +36,13 @@ Actively try to disprove material conclusions. Test alternative reasonable inter
 
 For Requirement, verify that accepted product meaning and explicit TBDs are represented accurately, no TBD is presented as decided, and a TBD blocks only dependent work. For Roadmap, verify that every allocated obligation is accepted upstream, no TBD is allocated as decided, and incremental allocations preserve claim boundaries. For Spec, verify that only allocated, sufficiently clear upstream meaning is formalized without adding product semantics.
 
+For Task, independently apply the `ready` standard from `$gmgn-v2:write-task` to every `ready` row; any failing row prevents pass. When accepted authority determines the repair, directly repair the fixed unaccepted Task candidate, including its initial `ready` or `waiting` value. Never change an accepted Task's runtime status.
+
 Apply a deletion test before asking for additions. Report missing content only when its absence changes the current acceptance conclusion or a concrete downstream action. Reject speculative scope, unowned placeholders, duplicated authority, implementation detail in behavioral documents, and behavior invented by downstream documents. An explicit Requirement TBD is valid when it is not presented as decided and its affected scope is clear.
 
 For a semantic revision, inspect the whole affected authority surface. Preserve unaffected meaning and identifiers, confirm the stated impact, detect stale downstream references, and verify cross-document consistency across the complete candidate without expanding into unrelated cleanup.
 
-Only after completing the independent semantic review, use mechanical checks to validate the resulting candidate. When DocStar is available, use its `gmgn-v2` conventions to check the fixed candidate's frontmatter, real and reciprocal document links, entity definitions, Task table, and execution pointers. A discovered project-local conventions file and `--preset gmgn-v2` are mutually exclusive. Treat DocStar findings as structural evidence under the writing Skill; never treat a clean result as semantic approval.
+Only after completing the independent semantic review, use mechanical checks to validate the resulting candidate. When DocStar is available, use its `gmgn-v1` preset to check the fixed candidate's frontmatter, real and reciprocal document links, entity definitions, Task table, and execution pointers. A discovered project-local conventions file and `--preset gmgn-v1` are mutually exclusive. Treat DocStar findings as structural evidence under the writing Skill; never treat a clean result as semantic approval.
 
 ## Repair every material finding directly
 

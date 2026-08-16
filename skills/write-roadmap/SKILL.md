@@ -17,7 +17,7 @@ Use the English frontmatter keys `locale`, `purpose`, `upstream`, `downstream`, 
 
 Use `M<n>` for each Milestone, `M<n>-AC<n>` for its acceptance criteria, and `M<n>-D<n>` for its deliverables. Define each machine ID once in its own list item under a heading that clearly names its kind, and bold only the ID. These identifiers do not prescribe the document outline or heading order.
 
-When DocStar is available, use its `gmgn-v2` conventions and run its structural check before handoff; a project-local conventions file and `--preset gmgn-v2` are alternatives, not layers. Structural results do not decide semantic acceptance.
+When DocStar is available, use its `gmgn-v1` preset and run its structural check before handoff; a project-local conventions file and `--preset gmgn-v1` are alternatives, not layers. Structural results do not decide semantic acceptance.
 
 ## Split by accepted results
 

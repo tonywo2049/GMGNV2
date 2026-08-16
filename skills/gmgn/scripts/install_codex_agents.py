@@ -26,6 +26,23 @@ def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def parse_profile(path: Path, data: bytes) -> dict:
+    try:
+        profile = tomllib.loads(data.decode())
+    except (UnicodeDecodeError, tomllib.TOMLDecodeError) as exc:
+        raise ValueError(f"Invalid Agent profile {path}: {exc}") from exc
+    missing = [
+        field
+        for field in REQUIRED_FIELDS
+        if not isinstance(profile.get(field), str) or not profile[field].strip()
+    ]
+    if missing:
+        raise ValueError(f"Agent profile {path} is missing: {', '.join(missing)}")
+    if profile["name"] != path.stem:
+        raise ValueError(f"Agent name does not match filename: {path}")
+    return profile
+
+
 def plugin_version(source_dir: Path) -> str:
     manifest = source_dir.parents[1] / ".codex-plugin" / "plugin.json"
     try:
@@ -45,19 +62,7 @@ def read_sources(source_dir: Path = SOURCE_DIR) -> dict[str, bytes]:
         if not source.is_file() or source.is_symlink():
             raise ValueError(f"Agent profile must be a regular file: {source}")
         data = source.read_bytes()
-        try:
-            profile = tomllib.loads(data.decode())
-        except (UnicodeDecodeError, tomllib.TOMLDecodeError) as exc:
-            raise ValueError(f"Invalid Agent profile {source}: {exc}") from exc
-        missing = [
-            field
-            for field in REQUIRED_FIELDS
-            if not isinstance(profile.get(field), str) or not profile[field].strip()
-        ]
-        if missing:
-            raise ValueError(f"Agent profile {source} is missing: {', '.join(missing)}")
-        if profile["name"] != source.stem:
-            raise ValueError(f"Agent name does not match filename: {source}")
+        profile = parse_profile(source, data)
         if profile["name"] in names:
             raise ValueError(f"Duplicate Agent name: {profile['name']}")
         names.add(profile["name"])
@@ -174,31 +179,35 @@ def check(source_dir: Path = SOURCE_DIR) -> tuple[Path, list[str]]:
         destination = destination_dir / name
         if destination.is_symlink() or not destination.is_file():
             issues.append(f"Missing regular Agent profile: {destination}")
+            continue
+        try:
+            parse_profile(destination, destination.read_bytes())
+        except (OSError, ValueError) as exc:
+            issues.append(str(exc))
 
     return destination_dir, issues
 
 
-def uninstall(source_dir: Path = SOURCE_DIR) -> tuple[Path, list[str]]:
+def uninstall() -> tuple[Path, list[str], list[str]]:
     destination_dir = effective_codex_home() / "agents"
     state = read_state(destination_dir)
-    names = set(state.get("files", {}))
-    names.update(read_sources(source_dir))
     removed: list[str] = []
+    preserved: list[str] = []
 
-    for name in sorted(names):
+    for name, expected_hash in sorted(state.get("files", {}).items()):
         destination = destination_dir / name
-        if destination.exists() or destination.is_symlink():
-            if not destination.is_file() and not destination.is_symlink():
-                raise ValueError(f"Managed Agent destination is not a file: {destination}")
+        if destination.is_file() and not destination.is_symlink() and digest(destination.read_bytes()) == expected_hash:
             destination.unlink()
             removed.append(name)
+        elif destination.exists() or destination.is_symlink():
+            preserved.append(name)
 
     state_path = destination_dir / STATE_FILE
     if state_path.exists() or state_path.is_symlink():
         if not state_path.is_file() and not state_path.is_symlink():
             raise ValueError(f"Invalid GMGN V2 state path: {state_path}")
         state_path.unlink()
-    return destination_dir, removed
+    return destination_dir, removed, preserved
 
 
 def print_sync_result(
@@ -242,9 +251,10 @@ def main(argv: list[str] | None = None) -> int:
             print(f"GMGN V2 Agent profiles are installed for this plugin version: {destination}")
             return 0
 
-        destination, removed = uninstall()
+        destination, removed, preserved = uninstall()
         print(f"GMGN V2 Agent directory: {destination}")
         print(f"Removed: {', '.join(removed) if removed else 'none'}")
+        print(f"Preserved modified or unmanaged: {', '.join(preserved) if preserved else 'none'}")
         return 0
     except (OSError, ValueError) as exc:
         print(f"GMGN V2 Agent operation failed: {exc}", file=sys.stderr)
