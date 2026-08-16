@@ -2,14 +2,14 @@
 
 GMGN V2 is an Agent-driven delivery workflow for Codex. It turns product ideas into traceable product authority, implementable work, independently reviewed code, and explicit Milestone closure.
 
-See [GMGNV2.md](GMGNV2.md) for the normative workflow architecture. This document covers installation and use. See [README.zh-CN.md](README.zh-CN.md) for Chinese.
+The normative runtime contract and router are in [`skills/gmgn/SKILL.md`](skills/gmgn/SKILL.md). This document covers installation and use. See [README.zh-CN.md](README.zh-CN.md) for Chinese.
 
 ## What GMGN V2 provides
 
 - Authority flow: `Project Definition + Requirements → Roadmap → Spec → Design Bundle → Task`.
 - Targeted product research only when a decision needs it; bounded implementation research only for unresolved external facts.
 - Explicit approval for new or semantically revised Project Definitions and Requirements; first approval for Roadmap; independent Critic gates for semantic document candidates.
-- One branch, worktree, and PR per Task, with Coder TDD and Ponytail plus independent Review for non-mechanical candidates.
+- One Runner and one Card/Log pair per Task, with as many repository branches, worktrees, and PRs as its accepted Design requires; Coder uses TDD and Ponytail, and non-mechanical candidates receive one complete independent Review.
 - Capacity-aware parallel Task dispatch, Milestone closure, and explicitly requested Release.
 
 ## Requirements
@@ -18,7 +18,7 @@ See [GMGNV2.md](GMGNV2.md) for the normative workflow architecture. This documen
 - Python 3.11 or newer for repository validation.
 - Git and a GitHub remote for the complete branch/PR workflow.
 - The Ponytail plugin and `$ponytail:ponytail` Skill. Coder uses it before changing code or tests; Auditor uses it for every Code Review.
-- DocStar is optional. When available, GMGN V2 uses its `gmgn-v2` conventions for structural document checks.
+- DocStar and CodeGraph are required discovery paths when available. They may be skipped only when unavailable; GMGN V2 initializes a missing CodeGraph index automatically.
 
 For current Codex plugin behavior, see the official [Plugins guide](https://learn.chatgpt.com/docs/plugins) and [Codex CLI plugin commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli#cli-codex-plugin).
 
@@ -68,7 +68,7 @@ Use $gmgn-v2:gmgn to close Milestone M1.
 Use $gmgn-v2:gmgn to release the accepted candidate as v1.0.0.
 ```
 
-Only an explicit `$gmgn-v2:gmgn` invocation activates GMGN V2. See [GMGNV2.md](GMGNV2.md) for routing, document acceptance, Task state, Git, closure, and Release rules.
+Only an explicit `$gmgn-v2:gmgn` invocation activates GMGN V2. See [`skills/gmgn/SKILL.md`](skills/gmgn/SKILL.md) for routing, document acceptance, Task state, Git, closure, and Release rules.
 
 ## Validation
 
@@ -87,7 +87,7 @@ Run from the repository root:
 python3 skills/gmgn/scripts/manage_codex_install.py uninstall
 ```
 
-The command removes the `gmgn-v2` plugin and only named Agent files recorded as GMGN V2 managed. It does not delete GMGN V1 configuration, project documents, branches, PRs, or repository history.
+The command removes the `gmgn-v2` plugin and unchanged named Agent files recorded as GMGN V2 managed. Modified or unmanaged Agent files are preserved and reported. It does not delete GMGN V1 configuration, project documents, branches, PRs, or repository history.
 
 Remove the local marketplace only when no plugin in it is still needed:
 
@@ -109,7 +109,6 @@ codex plugin list --json
 .codex/agents/                   Named Agent profiles
 hooks/                           SessionStart Agent synchronization
 skills/                          Router, writing, research, audit, and installation tools
-GMGNV2.md                        Normative workflow architecture
 README.md                        English usage
 README.zh-CN.md                  Chinese usage
 tests/                           Mechanical repository validation

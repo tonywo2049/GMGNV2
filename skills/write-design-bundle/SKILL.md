@@ -19,7 +19,7 @@ Keep a new or semantic complete Bundle candidate `draft`; change every file in t
 
 Give each Design element referenced outside its defining text a stable `D<n>` ID and each Contract a stable `C<n>` ID. Define each machine ID once in its own list item under a heading that clearly names its kind, and bold only the ID. This does not prescribe Bundle heading order or file count.
 
-When DocStar is available, use its `gmgn-v2` conventions and run its structural check on the complete Bundle before handoff; a project-local conventions file replaces, rather than augments, the preset. Structural results cannot select a Design or accept the Bundle.
+When DocStar is available, use its `gmgn-v1` preset and run its structural check on the complete Bundle before handoff; a project-local conventions file replaces, rather than augments, the preset. Structural results cannot select a Design or accept the Bundle.
 
 ## Gate bounded implementation research
 

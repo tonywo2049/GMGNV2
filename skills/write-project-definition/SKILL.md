@@ -19,7 +19,7 @@ For every graph-governed Markdown document, keep the English frontmatter keys `l
 
 Use `type: project-definition`, `nature: normative` for `ProjectDefinition.md`, and `type: project-definition-log`, `nature: descriptive` for `ProjectDefinitionLog.md`. Use only `draft`, `pending-approval`, `approved`, or `closed` for document `status`. This machine surface does not prescribe headings, section order, prose shape, or Project Definition anchors.
 
-When DocStar is available, use its `gmgn-v2` conventions for the corpus and run its structural check before handoff; use a discovered project-local conventions file instead of also passing a preset. Treat the result as structural evidence, never semantic approval.
+When DocStar is available, use its `gmgn-v1` preset for the corpus and run its structural check before handoff; use a discovered project-local conventions file instead of also passing a preset. Treat the result as structural evidence, never semantic approval.
 
 ## Preserve the required meaning
 
@@ -68,4 +68,4 @@ Normal downstream work must depend on `ProjectDefinition.md` directly or through
 - Confirm non-goals prevent the main foreseeable scope misunderstandings.
 - Confirm no downstream document detail or unsupported claim has leaked into the root definition.
 - Confirm a revision preserves unaffected meaning and identifies its real downstream impact.
-- Confirm the seven frontmatter keys, reciprocal existing-document links, and DocStar `gmgn-v2` structural check when available.
+- Confirm the seven frontmatter keys, reciprocal existing-document links, and DocStar `gmgn-v1` structural check when available.

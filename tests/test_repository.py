@@ -60,6 +60,14 @@ class RepositoryTests(unittest.TestCase):
             self.assertEqual(output.getvalue(), "")
             self.assertTrue(customized.read_bytes().endswith(b"# user customization\n"))
 
+    def test_installer_check_rejects_invalid_installed_toml(self):
+        installer = load_script("install_codex_agents")
+        with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"CODEX_HOME": temp_dir}):
+            destination, installed, _, _ = installer.sync()
+            (destination / installed[0]).write_text("invalid = [")
+
+            self.assertTrue(installer.check()[1])
+
     def test_installer_removes_stale_managed_profiles(self):
         installer = load_script("install_codex_agents")
         with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"CODEX_HOME": temp_dir}):
@@ -95,10 +103,33 @@ class RepositoryTests(unittest.TestCase):
                 self.assertIn(customized.name, installer.sync()[1])
             self.assertEqual(customized.read_bytes(), original)
 
-            _, removed = installer.uninstall()
+            _, removed, preserved = installer.uninstall()
             self.assertEqual(len(removed), len(AGENTS))
+            self.assertEqual(preserved, [])
             self.assertEqual(old_agent.read_text(), "v1")
             self.assertFalse((destination / installer.STATE_FILE).exists())
+
+    def test_uninstall_preserves_untracked_named_profile(self):
+        installer = load_script("install_codex_agents")
+        with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"CODEX_HOME": temp_dir}):
+            profile = Path(temp_dir) / "agents/gmgnv2_runner.toml"
+            profile.parent.mkdir(parents=True)
+            profile.write_text("user-owned")
+
+            installer.uninstall()
+
+            self.assertEqual(profile.read_text(), "user-owned")
+
+    def test_uninstall_preserves_modified_managed_profile(self):
+        installer = load_script("install_codex_agents")
+        with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"CODEX_HOME": temp_dir}):
+            destination, installed, _, _ = installer.sync()
+            profile = destination / installed[0]
+            profile.write_bytes(profile.read_bytes() + b"\n# user customization\n")
+
+            installer.uninstall()
+
+            self.assertTrue(profile.is_file())
 
     def test_plugin_install_syncs_and_checks_the_installed_copy(self):
         manager = load_script("manage_codex_install")
